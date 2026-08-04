@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Tập Phân Số</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --border: #e2e8f0;
+            --correct: #16a34a;
+            --wrong: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Controls */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        select {
+            padding: 0.6rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            background-color: #fff;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+        }
+
+        /* Math Display */
+        .math-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 1.75rem;
+            font-weight: bold;
+            padding: 2rem 1rem;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+        }
+
+        .fraction .num {
+            border-bottom: 2px solid var(--text);
+            padding: 0 6px 2px 6px;
+            text-align: center;
+        }
+
+        .fraction .den {
+            padding: 2px 6px 0 6px;
+            text-align: center;
+        }
+
+        .fraction input {
+            width: 65px;
+            height: 40px;
+            font-size: 1.25rem;
+            text-align: center;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .fraction input:focus {
+            border-color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+
+        .btn-danger {
+            background-color: #fee2e2;
+            color: var(--wrong);
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+
+        .btn-danger:hover {
+            background-color: #fca5a5;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback.correct {
+            display: block;
+            background-color: #dcfce7;
+            color: var(--correct);
+        }
+
+        .feedback.wrong {
+            display: block;
+            background-color: #fee2e2;
+            color: var(--wrong);
+        }
+
+        /* History Table */
+        .history-list {
+            max-height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-badge.correct { background: #dcfce7; color: var(--correct); }
+        .status-badge.wrong { background: #fee2e2; color: var(--wrong); }
+
+        /* Floating Toggle Button */
+        .btn-scratchpad-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-scratchpad-toggle:hover {
+            transform: translateY(-2px);
+            background-color: var(--primary-hover);
+        }
+
+        /* Drawable Canvas Layer */
+        .scratchpad-container {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 450px;
+            height: 380px;
+            background: #ffffff;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .scratchpad-container.fullscreen {
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            width: calc(100vw - 20px);
+            height: calc(100vh - 20px);
+        }
+
+        .scratchpad-header {
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .scratchpad-tools {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .tool-btn {
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            flex: initial;
+        }
+
+        .color-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-dot.active {
+            border-color: #000;
+        }
+
+        canvas#scratchpad {
+            touch-action: none;
+            cursor: crosshair;
+            background: #fafafa;
+            flex: 1;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Cài đặt -->
+    <div class="card">
+        <h2>Tùy chỉnh phép tính</h2>
+        <div class="settings-grid">
+            <div class="form-group">
+                <label for="op-select">Phép tính:</label>
+                <select id="op-select">
+                    <option value="random">Ngẫu nhiên (+, -, ×, ÷)</option>
+                    <option value="+">Cộng (+)</option>
+                    <option value="-">Trừ (-)</option>
+                    <option value="*">Nhân (×)</option>
+                    <option value="/">Chia (÷)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="mode-select">Chế độ mẫu số / dạng bài:</label>
+                <select id="mode-select">
+                    <option value="random">Thường (Mẫu số Ngẫu nhiên)</option>
+                    <option value="bcnn" selected>Tập trung BCNN (Mẫu có BCNN/ƯCLN > 1)</option>
+                    <option value="reducible">Tập trung Rút gọn (Phân số chưa tối giản)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Khu vực làm bài -->
+    <div class="card">
+        <div class="math-box" id="math-box">
+            <!-- Phép tính sẽ render ở đây -->
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-secondary" id="btn-generate">Tạo phép tính mới</button>
+            <button class="btn-primary" id="btn-check">Kiểm tra kết quả</button>
+        </div>
+
+        <div id="feedback" class="feedback"></div>
+    </div>
+
+    <!-- Lịch sử -->
+    <div class="card">
+        <h2>
+            Lịch sử tập luyện
+            <button class="btn-danger" id="btn-clear-history">Xóa lịch sử</button>
+        </h2>
+        <div class="history-list" id="history-list">
+            <!-- Lịch sử sẽ render ở đây -->
+        </div>
+    </div>
+</div>
+
+<!-- Floating Toggle Button cho Bảng nháp -->
+<button class="btn-scratchpad-toggle" id="btn-toggle-scratchpad">
+    ✏️ Bảng nháp
+</button>
+
+<!-- Container Bảng Nháp -->
+<div class="scratchpad-container" id="scratchpad-container">
+    <div class="scratchpad-header">
+        <span style="font-weight: bold; font-size: 0.85rem;">Bảng Nháp</span>
+        <div class="scratchpad-tools">
+            <span class="color-dot active" style="background: #000;" data-color="#000000"></span>
+            <span class="color-dot" style="background: #dc2626;" data-color="#dc2626"></span>
+            <span class="color-dot" style="background: #2563eb;" data-color="#2563eb"></span>
+            <button class="tool-btn" id="btn-clear-canvas">Xóa</button>
+            <button class="tool-btn" id="btn-resize-canvas">🔳 Mở rộng</button>
+            <button class="tool-btn" id="btn-close-canvas">❌</button>
+        </div>
+    </div>
+    <canvas id="scratchpad"></canvas>
+</div>
+
+<script>
+    // --- Thuật toán toán học ---
+    function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        while (b) {
+            let t = b;
+            b = a % b;
+            a = t;
+        }
+        return a;
+    }
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // --- Trạng thái ứng dụng ---
+    let currentProblem = null;
+    let history = JSON.parse(localStorage.getItem('frac_history_v2') || '[]');
+
+    // Elements
+    const mathBox = document.getElementById('math-box');
+    const opSelect = document.getElementById('op-select');
+    const modeSelect = document.getElementById('mode-select');
+    const btnGenerate = document.getElementById('btn-generate');
+    const btnCheck = document.getElementById('btn-check');
+    const feedback = document.getElementById('feedback');
+    const historyList = document.getElementById('history-list');
+    const btnClearHistory = document.getElementById('btn-clear-history');
+
+    // --- Sinh phép tính ---
+    function generateProblem() {
+        feedback.className = 'feedback';
+        feedback.style.display = 'none';
+
+        let op = opSelect.value;
+        if (op === 'random') {
+            const ops = ['+', '-', '*', '/'];
+            op = ops[getRandomInt(0, 3)];
+        }
+
+        const mode = modeSelect.value;
+
+        let n1, d1, n2, d2;
+
+        if (mode === 'bcnn') {
+            // Chế độ tập trung BCNN: tạo mẫu số có BCNN/ƯCLN > 1
+            const type = getRandomInt(1, 2);
+            if (type === 1) {
+                // Mẫu này là bội của mẫu kia (VD: 3 và 6, 4 và 12)
+                d1 = getRandomInt(2, 6);
+                const k = getRandomInt(2, 3);
+                d2 = d1 * k;
+                if (Math.random() < 0.5) [d1, d2] = [d2, d1];
+            } else {
+                // Mẫu số có chung ước số khác 1 (VD: 6 và 8 -> UCLN=2, BCNN=24)
+                const pairs = [[4,6], [6,8], [6,9], [8,10], [8,12], [9,12], [10,15], [12,15], [12,16]];
+                const pair = pairs[getRandomInt(0, pairs.length - 1)];
+                d1 = pair[0];
+                d2 = pair[1];
+                if (Math.random() < 0.5) [d1, d2] = [d2, d1];
+            }
+            n1 = getRandomInt(1, 9);
+            n2 = getRandomInt(1, 9);
+
+        } else if (mode === 'reducible') {
+            // Chế độ tập trung Phân số có thể rút gọn
+            d1 = getRandomInt(2, 6) * 2;
+            n1 = getRandomInt(1, 4) * 2; // n1/d1 chưa tối giản
+            d2 = getRandomInt(2, 6);
+            n2 = getRandomInt(1, 8);
+        } else {
+            // Ngẫu nhiên hoàn toàn
+            n1 = getRandomInt(1, 9);
+            d1 = getRandomInt(2, 12);
+            n2 = getRandomInt(1, 9);
+            d2 = getRandomInt(2, 12);
+        }
+
+        // Đảm bảo kết quả không âm khi làm phép trừ
+        if (op === '-' && (n1/d1 < n2/d2)) {
+            [n1, n2] = [n2, n1];
+            [d1, d2] = [d2, d1];
+        }
+
+        // Tính kết quả chuẩn
+        let resNum, resDen;
+        if (op === '+') {
+            resNum = n1 * d2 + n2 * d1;
+            resDen = d1 * d2;
+        } else if (op === '-') {
+            resNum = n1 * d2 - n2 * d1;
+            resDen = d1 * d2;
+        } else if (op === '*') {
+            resNum = n1 * n2;
+            resDen = d1 * d2;
+        } else if (op === '/') {
+            resNum = n1 * d2;
+            resDen = d1 * n2;
+        }
+
+        // Rút gọn kết quả về tối giản
+        const common = gcd(resNum, resDen);
+        const finalNum = resNum / common;
+        const finalDen = resDen / common;
+
+        currentProblem = { n1, d1, op, n2, d2, finalNum, finalDen };
+        renderProblem();
+    }
+
+    // Hiển thị phép tính
+    function renderProblem() {
+        const opSymbol = { '+': '+', '-': '-', '*': '×', '/': '÷' }[currentProblem.op];
+
+        mathBox.innerHTML = `
+            <div class="fraction">
+                <span class="num">${currentProblem.n1}</span>
+                <span class="den">${currentProblem.d1}</span>
+            </div>
+            <span>${opSymbol}</span>
+            <div class="fraction">
+                <span class="num">${currentProblem.n2}</span>
+                <span class="den">${currentProblem.d2}</span>
+            </div>
+            <span>=</span>
+            <div class="fraction">
+                <input type="number" id="ans-num" placeholder="Tử">
+                <span class="den"><input type="number" id="ans-den" placeholder="Mẫu"></span>
+            </div>
+        `;
+    }
+
+    // Kiểm tra đáp án
+    function checkAnswer() {
+        const userNum = parseInt(document.getElementById('ans-num').value);
+        const userDen = parseInt(document.getElementById('ans-den').value);
+
+        if (isNaN(userNum) || isNaN(userDen)) {
+            feedback.className = 'feedback wrong';
+            feedback.textContent = 'Vui lòng nhập đầy đủ Tử số và Mẫu số!';
+            return;
+        }
+
+        if (userDen === 0) {
+            feedback.className = 'feedback wrong';
+            feedback.textContent = 'Mẫu số phải khác 0!';
+            return;
+        }
+
+        const userGcd = gcd(userNum, userDen);
+        const isCorrect = (userNum / userGcd === currentProblem.finalNum) && 
+                          (userDen / userGcd === currentProblem.finalDen);
+        const isSimplified = userGcd === 1;
+
+        const opSymbol = { '+': '+', '-': '-', '*': '×', '/': '÷' }[currentProblem.op];
+        const exprStr = `${currentProblem.n1}/${currentProblem.d1} ${opSymbol} ${currentProblem.n2}/${currentProblem.d2}`;
+        const correctStr = currentProblem.finalDen === 1 ? `${currentProblem.finalNum}` : `${currentProblem.finalNum}/${currentProblem.finalDen}`;
+
+        if (isCorrect) {
+            if (isSimplified) {
+                feedback.className = 'feedback correct';
+                feedback.textContent = 'Chính xác! Hoàn hảo.';
+            } else {
+                feedback.className = 'feedback correct';
+                feedback.textContent = `Đúng kết quả! Tuy nhiên bạn nên rút gọn về tối giản: ${correctStr}`;
+            }
+        } else {
+            feedback.className = 'feedback wrong';
+            feedback.textContent = `Chưa chính xác. Đáp án tối giản là: ${correctStr}`;
+        }
+
+        saveHistory({
+            expr: exprStr,
+            userAns: `${userNum}/${userDen}`,
+            correctAns: correctStr,
+            isCorrect: isCorrect,
+            date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+    }
+
+    // Lịch sử tập luyện
+    function saveHistory(item) {
+        history.unshift(item);
+        if (history.length > 30) history.pop();
+        localStorage.setItem('frac_history_v2', JSON.stringify(history));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        if (history.length === 0) {
+            historyList.innerHTML = '<div style="text-align:center; color:#94a3b8; padding: 1rem;">Chưa có lịch sử làm bài</div>';
+            return;
+        }
+
+        historyList.innerHTML = history.map(item => `
+            <div class="history-item">
+                <div>
+                    <strong>${item.expr}</strong> = ${item.userAns}
+                    ${!item.isCorrect ? `<small style="color:var(--wrong)"> (Đúng: ${item.correctAns})</small>` : ''}
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span class="status-badge ${item.isCorrect ? 'correct' : 'wrong'}">
+                        ${item.isCorrect ? 'Đúng' : 'Sai'}
+                    </span>
+                    <small style="color:#94a3b8">${item.date}</small>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    btnClearHistory.addEventListener('click', () => {
+        history = [];
+        localStorage.removeItem('frac_history_v2');
+        renderHistory();
+    });
+
+    btnGenerate.addEventListener('click', generateProblem);
+    btnCheck.addEventListener('click', checkAnswer);
+
+    // --- LOGIC BẢNG NHÁP (DRAWABLE CANVAS) ---
+    const scratchpadContainer = document.getElementById('scratchpad-container');
+    const btnToggleScratchpad = document.getElementById('btn-toggle-scratchpad');
+    const btnCloseCanvas = document.getElementById('btn-close-canvas');
+    const btnClearCanvas = document.getElementById('btn-clear-canvas');
+    const btnResizeCanvas = document.getElementById('btn-resize-canvas');
+    const canvas = document.getElementById('scratchpad');
+    const ctx = canvas.getContext('2d');
+
+    let isDrawing = false;
+    let currentColor = '#000000';
+    let isFullscreen = false;
+
+    function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = currentColor;
+    }
+
+    btnToggleScratchpad.addEventListener('click', () => {
+        const isVisible = scratchpadContainer.style.display === 'flex';
+        scratchpadContainer.style.display = isVisible ? 'none' : 'flex';
+        if (!isVisible) {
+            setTimeout(resizeCanvas, 50);
+        }
+    });
+
+    btnCloseCanvas.addEventListener('click', () => {
+        scratchpadContainer.style.display = 'none';
+    });
+
+    btnResizeCanvas.addEventListener('click', () => {
+        isFullscreen = !isFullscreen;
+        if (isFullscreen) {
+            scratchpadContainer.classList.add('fullscreen');
+            btnResizeCanvas.textContent = '🔲 Thu nhỏ';
+        } else {
+            scratchpadContainer.classList.remove('fullscreen');
+            btnResizeCanvas.textContent = '🔳 Mở rộng';
+        }
+        setTimeout(resizeCanvas, 50);
+    });
+
+    btnClearCanvas.addEventListener('click', () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    // Chọn màu bút vẽ
+    document.querySelectorAll('.color-dot').forEach(dot => {
+        dot.addEventListener('click', (e) => {
+            document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+            e.target.classList.add('active');
+            currentColor = e.target.getAttribute('data-color');
+            ctx.strokeStyle = currentColor;
+        });
+    });
+
+    // Xử lý sự kiện vẽ (Chuột & Cảm ứng)
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        };
+    }
+
+    function startDrawing(e) {
+        isDrawing = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+    }
+
+    function stopDrawing() {
+        isDrawing = false;
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', stopDrawing);
+
+    // Khởi tạo ban đầu
+    generateProblem();
+    renderHistory();
+</script>
+
+</body>
+</html>

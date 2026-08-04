@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Tập Đại Số Lớp 6 - Số Âm & Đa Thức</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent: #8b5cf6;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            padding-bottom: 70px; /* space for fixed bottom bar */
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        header p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 3fr 2fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.65rem 1.2rem;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #374151;
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+        }
+
+        .btn-danger {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background-color: #fca5a5;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* Question Box */
+        .question-box {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .question-math {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 0.5rem;
+            letter-spacing: 0.5px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .answer-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .answer-input {
+            flex: 1;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .feedback {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback.correct {
+            display: block;
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .feedback.incorrect {
+            display: block;
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        /* Stats & History */
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .stat-item .val {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #166534;
+        }
+
+        .stat-item .lbl {
+            font-size: 0.75rem;
+            color: #15803d;
+        }
+
+        .history-list {
+            max-height: 320px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            background: #f9fafb;
+            border-left: 4px solid #ccc;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item.pass {
+            border-left-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .history-item.fail {
+            border-left-color: var(--danger);
+            background: #fef2f2;
+        }
+
+        /* Fixed Bottom Bar for Scratchpad */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: #1e293b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+        }
+
+        /* Scratchpad Drawer */
+        .scratchpad-drawer {
+            position: fixed;
+            bottom: 50px;
+            left: 0;
+            right: 0;
+            height: 350px;
+            background: #ffffff;
+            border-top: 3px solid var(--primary);
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+            transform: translateY(120%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s ease;
+        }
+
+        .scratchpad-drawer.open {
+            transform: translateY(0);
+        }
+
+        .scratchpad-drawer.fullscreen {
+            height: calc(100vh - 50px) !important;
+            bottom: 50px;
+        }
+
+        .drawer-header {
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .drawer-tools {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-btn {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .scratchpad-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #fafafa;
+        }
+
+        #scratchCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        #scratchText {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 1rem;
+            border: none;
+            resize: none;
+            outline: none;
+            font-size: 1rem;
+            background: #fff8dc1a;
+            font-family: inherit;
+            display: none;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .color-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-dot.selected {
+            border-color: #000;
+        }
+
+        .guide-box {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Luyện Tập Đại Số Lớp 6</h1>
+        <p>Cộng trừ số âm, đơn thức & đa thức đồng dạng</p>
+    </header>
+
+    <div class="container">
+        <!-- Main Practice Area -->
+        <div class="card">
+            <div class="controls-grid">
+                <div>
+                    <label for="topicSelect">Chủ đề</label>
+                    <select id="topicSelect" onchange="generateQuestion()">
+                        <option value="signed">1. Phép tính Số Nguyên (Số âm)</option>
+                        <option value="monomial">2. Cộng trừ Đơn thức đồng dạng</option>
+                        <option value="polynomial">3. Cộng trừ Đa thức đơn giản</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="diffSelect">Độ khó</label>
+                    <select id="diffSelect" onchange="generateQuestion()">
+                        <option value="easy">Dễ (2 thành phần)</option>
+                        <option value="medium" selected>Trung bình (Nhiều dấu ngoặc)</option>
+                        <option value="hard">Khó (Đa biến / Thu gọn)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="generateQuestion()">
+                🔄 Tạo bài tập mới (Generate)
+            </button>
+
+            <div class="question-box">
+                <span style="font-size:0.85rem; color:#64748b;">Tính / Thu gọn biểu thức:</span>
+                <div class="question-math" id="questionDisplay">(-5) + (-8)</div>
+            </div>
+
+            <form onsubmit="checkAnswer(event)">
+                <div class="answer-form">
+                    <input type="text" id="answerInput" class="answer-input" placeholder="Nhập kết quả..." autocomplete="off">
+                    <button type="submit" class="btn btn-primary">Nộp bài</button>
+                </div>
+            </form>
+
+            <div id="feedback" class="feedback"></div>
+
+            <div class="guide-box">
+                💡 <strong>Mẹo nhập đáp án:</strong><br>
+                - Với đơn thức: Nhập ví dụ <code>-5x</code> hoặc <code>3x^2</code>.<br>
+                - Với đa thức: Viết liền không cách hoặc viết rõ dạng thu gọn. Ví dụ: <code>2x-3y</code>.
+            </div>
+        </div>
+
+        <!-- Sidebar: Stats & History -->
+        <div class="card">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="val" id="scoreCorrect">0</div>
+                    <div class="lbl">Đúng</div>
+                </div>
+                <div class="stat-item">
+                    <div class="val" id="scoreTotal">0</div>
+                    <div class="lbl">Tổng số câu</div>
+                </div>
+                <div class="stat-item">
+                    <div class="val" id="scorePercent">0%</div>
+                    <div class="lbl">Tỉ lệ đúng</div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
+                <label style="margin:0;">Lịch sử làm bài</label>
+                <button class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="clearHistory()">Xóa lịch sử</button>
+            </div>
+
+            <div class="history-list" id="historyList">
+                <!-- History Items loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scratchpad Bottom Drawer -->
+    <div class="scratchpad-drawer" id="scratchDrawer">
+        <div class="drawer-header">
+            <div class="drawer-tools">
+                <button class="tool-btn active" id="btnModeDraw" onclick="switchPadMode('draw')">✏️ Vẽ nháp</button>
+                <button class="tool-btn" id="btnModeText" onclick="switchPadMode('text')">📝 Ghi văn bản</button>
+                
+                <!-- Draw Controls -->
+                <div id="drawControls" style="display:flex; gap:8px; align-items:center; margin-left:10px;">
+                    <div class="color-picker">
+                        <div class="color-dot selected" style="background:#000" onclick="setColor('#000', this)"></div>
+                        <div class="color-dot" style="background:#2563eb" onclick="setColor('#2563eb', this)"></div>
+                        <div class="color-dot" style="background:#ef4444" onclick="setColor('#ef4444', this)"></div>
+                    </div>
+                    <button class="tool-btn" onclick="clearCanvas()">🗑️ Xóa nét vẽ</button>
+                </div>
+            </div>
+
+            <div class="drawer-tools">
+                <button class="tool-btn" id="btnExpand" onclick="toggleFullscreen()">🗖 Toàn màn hình</button>
+                <button class="tool-btn" onclick="toggleScratchpad(false)">✖ Đóng</button>
+            </div>
+        </div>
+        <div class="scratchpad-content">
+            <canvas id="scratchCanvas"></canvas>
+            <textarea id="scratchText" placeholder="Ghi chú nháp bằng phím tại đây... (Tự động lưu)"></textarea>
+        </div>
+    </div>
+
+    <!-- Fixed Bottom Bar -->
+    <div class="bottom-nav">
+        <span>Luyện tập Toán 6 - Số âm & Đa thức</span>
+        <button class="btn btn-secondary" style="padding:0.3rem 0.8rem; font-size:0.85rem;" onclick="toggleScratchpad()">
+            ✏️ Bảng Nháp
+        </button>
+    </div>
+
+    <script>
+        // State management
+        let state = {
+            topic: 'signed',
+            difficulty: 'medium',
+            currentQuestion: null,
+            history: [],
+            stats: { correct: 0, total: 0 },
+            padMode: 'draw',
+            textNotes: ''
+        };
+
+        const STORAGE_KEY = 'math6_algebra_app_state_v1';
+
+        // Variable & Math Generators
+        function getRandomInt(min, max) {
+            let res = Math.floor(Math.random() * (max - min + 1)) + min;
+            return res === 0 ? 1 : res; // Avoid zero for coefficients easily
+        }
+
+        function formatSigned(num) {
+            return num < 0 ? `(${num})` : `${num}`;
+        }
+
+        function generateQuestionData(topic, diff) {
+            let qText = "";
+            let answer = "";
+
+            if (topic === 'signed') {
+                // Phép tính số nguyên âm
+                let a = getRandomInt(-15, 15);
+                let b = getRandomInt(-15, 15);
+                let c = getRandomInt(-15, 15);
+
+                if (diff === 'easy') {
+                    let op = Math.random() > 0.5 ? '+' : '-';
+                    qText = `${formatSigned(a)} ${op} ${formatSigned(b)}`;
+                    answer = op === '+' ? (a + b).toString() : (a - b).toString();
+                } else if (diff === 'medium') {
+                    // e.g. a - (-b) + c
+                    qText = `${formatSigned(a)} - (${b < 0 ? b : -b}) + ${formatSigned(c)}`;
+                    let realB = b < 0 ? b : -b;
+                    answer = (a - realB + c).toString();
+                } else {
+                    // Hard: Absolute values or multiple operations
+                    qText = `${formatSigned(a)} . ${formatSigned(b)} - ${formatSigned(c)}`;
+                    answer = (a * b - c).toString();
+                }
+            } 
+            else if (topic === 'monomial') {
+                // Đơn thức đồng dạng
+                let vars = ['x', 'y', 'a', 'x^2'];
+                let v = vars[Math.floor(Math.random() * vars.length)];
+                let coeff1 = getRandomInt(-10, 10);
+                let coeff2 = getRandomInt(-10, 10);
+                let coeff3 = getRandomInt(-10, 10);
+
+                if (diff === 'easy') {
+                    qText = `${coeff1}${v} + ${formatSigned(coeff2)}${v}`;
+                    let resCoeff = coeff1 + coeff2;
+                    answer = resCoeff === 0 ? "0" : (resCoeff === 1 ? v : (resCoeff === -1 ? `-${v}` : `${resCoeff}${v}`));
+                } else if (diff === 'medium') {
+                    qText = `${coeff1}${v} - ${formatSigned(coeff2)}${v} + ${formatSigned(coeff3)}${v}`;
+                    let resCoeff = coeff1 - coeff2 + coeff3;
+                    answer = resCoeff === 0 ? "0" : (resCoeff === 1 ? v : (resCoeff === -1 ? `-${v}` : `${resCoeff}${v}`));
+                } else {
+                    // Two variables
+                    let v2 = 'y';
+                    qText = `${coeff1}x + ${coeff2}y - ${formatSigned(coeff3)}x`;
+                    let resX = coeff1 - coeff3;
+                    let termX = resX === 0 ? "" : (resX === 1 ? "x" : (resX === -1 ? "-x" : `${resX}x`));
+                    let termY = coeff2 === 0 ? "" : (coeff2 > 0 ? `+${coeff2}y` : `${coeff2}y`);
+                    if (termX !== "" && termY.startsWith("+")) {
+                        // Keep simple formatting
+                    }
+                    answer = (termX + termY).replace(/^\+/, "");
+                    if (answer === "") answer = "0";
+                }
+            } 
+            else if (topic === 'polynomial') {
+                // Đa thức đơn giản
+                let a1 = getRandomInt(-5, 5), b1 = getRandomInt(-5, 5);
+                let a2 = getRandomInt(-5, 5), b2 = getRandomInt(-5, 5);
+
+                if (diff === 'easy') {
+                    // (a1*x + b1) + (a2*x + b2)
+                    qText = `(${a1}x ${b1>=0?'+':''}${b1}) + (${a2}x ${b2>=0?'+':''}${b2})`;
+                    let resA = a1 + a2;
+                    let resB = b1 + b2;
+                    let partA = resA === 0 ? "" : (resA === 1 ? "x" : (resA === -1 ? "-x" : `${resA}x`));
+                    let partB = resB === 0 ? "" : (resB > 0 ? `+${resB}` : `${resB}`);
+                    answer = (partA + partB).replace(/^\+/, "");
+                    if (answer === "") answer = "0";
+                } else {
+                    // (a1*x + b1) - (a2*x + b2)
+                    qText = `(${a1}x ${b1>=0?'+':''}${b1}) - (${a2}x ${b2>=0?'+':''}${b2})`;
+                    let resA = a1 - a2;
+                    let resB = b1 - b2;
+                    let partA = resA === 0 ? "" : (resA === 1 ? "x" : (resA === -1 ? "-x" : `${resA}x`));
+                    let partB = resB === 0 ? "" : (resB > 0 ? `+${resB}` : `${resB}`);
+                    answer = (partA + partB).replace(/^\+/, "");
+                    if (answer === "") answer = "0";
+                }
+            }
+
+            return { question: qText, answer: answer.trim() };
+        }
+
+        function generateQuestion() {
+            const topic = document.getElementById('topicSelect').value;
+            const diff = document.getElementById('diffSelect').value;
+            
+            state.topic = topic;
+            state.difficulty = diff;
+            state.currentQuestion = generateQuestionData(topic, diff);
+
+            document.getElementById('questionDisplay').innerText = state.currentQuestion.question;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('answerInput').focus();
+
+            saveState();
+        }
+
+        function normalizeAnswer(str) {
+            return str.replace(/\s+/g, '').toLowerCase();
+        }
+
+        function checkAnswer(e) {
+            e.preventDefault();
+            if (!state.currentQuestion) return;
+
+            const userAns = document.getElementById('answerInput').value.trim();
+            if (!userAns) return;
+
+            const isCorrect = normalizeAnswer(userAns) === normalizeAnswer(state.currentQuestion.answer);
+            const feedbackEl = document.getElementById('feedback');
+
+            state.stats.total++;
+            if (isCorrect) {
+                state.stats.correct++;
+                feedbackEl.className = 'feedback correct';
+                feedbackEl.innerHTML = `🎉 Chính xác! Đáp án đúng là: <strong>${state.currentQuestion.answer}</strong>`;
+            } else {
+                feedbackEl.className = 'feedback incorrect';
+                feedbackEl.innerHTML = `❌ Chưa đúng! Đáp án đúng phải là: <strong>${state.currentQuestion.answer}</strong>`;
+            }
+
+            // Add to history
+            state.history.unshift({
+                question: state.currentQuestion.question,
+                userAns: userAns,
+                correctAns: state.currentQuestion.answer,
+                isCorrect: isCorrect,
+                timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            });
+
+            updateStatsDisplay();
+            renderHistory();
+            saveState();
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('scoreCorrect').innerText = state.stats.correct;
+            document.getElementById('scoreTotal').innerText = state.stats.total;
+            let pct = state.stats.total === 0 ? 0 : Math.round((state.stats.correct / state.stats.total) * 100);
+            document.getElementById('scorePercent').innerText = pct + '%';
+        }
+
+        function renderHistory() {
+            const listEl = document.getElementById('historyList');
+            listEl.innerHTML = '';
+
+            state.history.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `history-item ${item.isCorrect ? 'pass' : 'fail'}`;
+                div.innerHTML = `
+                    <div>
+                        <strong>${item.question}</strong><br>
+                        <span style="color:#666;">Bạn ghi: ${item.userAns} ${!item.isCorrect ? `(Đúng: ${item.correctAns})` : ''}</span>
+                    </div>
+                    <span style="font-size:0.75rem; color:#888;">${item.timestamp}</span>
+                `;
+                listEl.appendChild(div);
+            });
+        }
+
+        function clearHistory() {
+            if (confirm('Bạn có chắc chắn muốn xóa toàn bộ lịch sử?')) {
+                state.history = [];
+                state.stats = { correct: 0, total: 0 };
+                updateStatsDisplay();
+                renderHistory();
+                saveState();
+            }
+        }
+
+        /* --- LocalStorage Sync --- */
+        function saveState() {
+            state.textNotes = document.getElementById('scratchText').value;
+            // Save Canvas image state
+            const canvas = document.getElementById('scratchCanvas');
+            const canvasData = canvas.toDataURL();
+
+            const payload = {
+                ...state,
+                canvasData: canvasData
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) {
+                generateQuestion();
+                return;
+            }
+
+            try {
+                const data = JSON.parse(saved);
+                state = { ...state, ...data };
+
+                document.getElementById('topicSelect').value = state.topic || 'signed';
+                document.getElementById('diffSelect').value = state.difficulty || 'medium';
+                document.getElementById('scratchText').value = state.textNotes || '';
+
+                if (state.currentQuestion) {
+                    document.getElementById('questionDisplay').innerText = state.currentQuestion.question;
+                } else {
+                    generateQuestion();
+                }
+
+                updateStatsDisplay();
+                renderHistory();
+
+                if (data.canvasData) {
+                    let img = new Image();
+                    img.onload = function() {
+                        ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = data.canvasData;
+                }
+            } catch (e) {
+                console.error("Lỗi khi tải dữ liệu cũ:", e);
+                generateQuestion();
+            }
+        }
+
+        /* --- Scratchpad Drawer Logic --- */
+        let drawerOpen = false;
+        let isFullscreen = false;
+
+        function toggleScratchpad(forceState) {
+            const drawer = document.getElementById('scratchDrawer');
+            drawerOpen = forceState !== undefined ? forceState : !drawerOpen;
+            if (drawerOpen) {
+                drawer.classList.add('open');
+                resizeCanvas();
+            } else {
+                drawer.classList.remove('open');
+            }
+        }
+
+        function toggleFullscreen() {
+            const drawer = document.getElementById('scratchDrawer');
+            const btn = document.getElementById('btnExpand');
+            isFullscreen = !isFullscreen;
+            if (isFullscreen) {
+                drawer.classList.add('fullscreen');
+                btn.innerText = '🗗 Thu nhỏ';
+            } else {
+                drawer.classList.remove('fullscreen');
+                btn.innerText = '🗖 Toàn màn hình';
+            }
+            setTimeout(resizeCanvas, 300);
+        }
+
+        function switchPadMode(mode) {
+            state.padMode = mode;
+            document.getElementById('btnModeDraw').classList.toggle('active', mode === 'draw');
+            document.getElementById('btnModeText').classList.toggle('active', mode === 'text');
+            document.getElementById('scratchCanvas').style.display = mode === 'draw' ? 'block' : 'none';
+            document.getElementById('scratchText').style.display = mode === 'text' ? 'block' : 'none';
+            document.getElementById('drawControls').style.display = mode === 'draw' ? 'flex' : 'none';
+        }
+
+        /* --- Canvas Drawing Engine --- */
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let strokeColor = '#000000';
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            // Save old content
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(canvas, 0, 0);
+
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            // Restore content
+            ctx.drawImage(tempCanvas, 0, 0);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+        }
+
+        function setColor(color, el) {
+            strokeColor = color;
+            ctx.strokeStyle = color;
+            document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            saveState();
+        }
+
+        // Mouse & Touch events
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                saveState();
+            }
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+
+        canvas.addEventListener('touchstart', (e) => { startDrawing(e); e.preventDefault(); });
+        canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        document.getElementById('scratchText').addEventListener('input', saveState);
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // Init on page load
+        window.onload = function() {
+            loadState();
+            resizeCanvas();
+        };
+    </script>
+</body>
+</html>

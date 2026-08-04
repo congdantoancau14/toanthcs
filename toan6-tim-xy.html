@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Tập Toán 6 - Số Âm, Phân Số & Tìm x, y</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text); padding-bottom: 70px; min-height: 100vh; }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white; padding: 1.25rem 1rem; text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        header h1 { font-size: 1.4rem; font-weight: 700; }
+        header p { font-size: 0.85rem; opacity: 0.9; }
+
+        .container {
+            max-width: 900px; margin: 1.25rem auto; padding: 0 1rem;
+            display: grid; grid-template-columns: 1fr; gap: 1.25rem;
+        }
+        @media (min-width: 768px) { .container { grid-template-columns: 3fr 2fr; } }
+
+        .card {
+            background: var(--card-bg); border-radius: 12px; padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border);
+        }
+
+        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+        label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem; display: block; }
+        select, input[type="text"] {
+            width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 0.95rem; outline: none;
+        }
+        select:focus, input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.65rem 1.2rem; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; gap: 0.5rem; font-size: 0.95rem;
+        }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-secondary { background-color: #f3f4f6; color: #374151; border: 1px solid var(--border); }
+        .btn-danger { background-color: #fee2e2; color: #dc2626; }
+        .btn-block { width: 100%; }
+
+        .question-box {
+            background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 1.25rem; text-align: center; margin: 1rem 0;
+        }
+        .question-math {
+            font-size: 1.5rem; font-weight: 700; color: #0f172a; margin-top: 0.5rem; font-family: 'Courier New', Courier, monospace;
+        }
+
+        .answer-form { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .answer-input { flex: 1; font-size: 1.1rem; font-weight: 600; text-align: center; }
+
+        .feedback { margin-top: 1rem; padding: 0.8rem; border-radius: 8px; font-weight: 600; display: none; }
+        .feedback.correct { display: block; background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .feedback.incorrect { display: block; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+        .stats-bar {
+            display: flex; justify-content: space-around; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;
+        }
+        .stat-item .val { font-size: 1.2rem; font-weight: 700; color: #166534; }
+        .stat-item .lbl { font-size: 0.75rem; color: #15803d; }
+
+        .history-list { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; }
+        .history-item { padding: 0.6rem 0.8rem; border-radius: 6px; background: #f9fafb; border-left: 4px solid #ccc; font-size: 0.85rem; display: flex; justify-content: space-between; }
+        .history-item.pass { border-left-color: var(--success); background: #f0fdf4; }
+        .history-item.fail { border-left-color: var(--danger); background: #fef2f2; }
+
+        /* Fixed Bottom Bar & Scratchpad Drawer */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 50px; background: #1e293b; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; z-index: 1000;
+        }
+        .scratchpad-drawer {
+            position: fixed; bottom: 50px; left: 0; right: 0; height: 360px; background: #ffffff; border-top: 3px solid var(--primary); box-shadow: 0 -5px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; z-index: 999; transform: translateY(120%); transition: transform 0.3s ease, height 0.3s ease;
+        }
+        .scratchpad-drawer.open { transform: translateY(0); }
+        .scratchpad-drawer.fullscreen { height: calc(100vh - 50px) !important; }
+
+        .drawer-header { background: #f1f5f9; padding: 0.5rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+        .drawer-tools { display: flex; align-items: center; gap: 0.5rem; }
+        .tool-btn { background: white; border: 1px solid var(--border); padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .tool-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .scratchpad-content { flex: 1; position: relative; overflow: hidden; background: #fafafa; }
+        #scratchCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+        #scratchText { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 1rem; border: none; resize: none; outline: none; font-size: 1rem; display: none; }
+
+        .color-dot { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; display: inline-block; }
+        .color-dot.selected { border-color: #000; }
+        .guide-box { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Luyện Tập Toán 6</h1>
+        <p>Phân Số (ƯCLN/BCNN) & Tìm x, y từ Đơn/Đa thức</p>
+    </header>
+
+    <div class="container">
+        <!-- Main Practice Card -->
+        <div class="card">
+            <div class="controls-grid">
+                <div>
+                    <label for="topicSelect">Chủ đề</label>
+                    <select id="topicSelect" onchange="generateQuestion()">
+                        <option value="fraction">1. Tính Phân Số (Cần Rút Gọn / BCNN)</option>
+                        <option value="find_x_mono">2. Tìm x từ Đơn Thức (= 0 hoặc k)</option>
+                        <option value="find_x_poly">3. Tìm x, y từ Đa Thức (= 0)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="diffSelect">Độ khó</label>
+                    <select id="diffSelect" onchange="generateQuestion()">
+                        <option value="easy">Dễ (Biểu thức ngắn)</option>
+                        <option value="medium" selected>Trung bình (Có dấu ngoặc / mẫu số chung)</option>
+                        <option value="hard">Khó (Tính toán nâng cao)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="generateQuestion()">🔄 Tạo bài tập mới (Generate)</button>
+
+            <div class="question-box">
+                <span style="font-size:0.85rem; color:#64748b;" id="questionLabel">Tính kết quả:</span>
+                <div class="question-math" id="questionDisplay">1/2 + 3/4</div>
+            </div>
+
+            <form onsubmit="checkAnswer(event)">
+                <div class="answer-form">
+                    <input type="text" id="answerInput" class="answer-input" placeholder="Nhập đáp án..." autocomplete="off">
+                    <button type="submit" class="btn btn-primary">Nộp bài</button>
+                </div>
+            </form>
+
+            <div id="feedback" class="feedback"></div>
+
+            <div class="guide-box">
+                💡 <strong>Mẹo nhập đáp án:</strong><br>
+                - Với Phân số: Nhập dạng <code>a/b</code> (ví dụ: <code>-3/4</code>, <code>5/2</code>). Nếu kết quả là số nguyên thì nhập nguyên số đó.<br>
+                - Với Tìm x, y: Nhập giá trị <code>x = 2</code> hoặc nhập cặp <code>x=2, y=-1</code> (hoặc chỉ ghi số <code>2</code> nếu chỉ tìm x).
+            </div>
+        </div>
+
+        <!-- History Card -->
+        <div class="card">
+            <div class="stats-bar">
+                <div class="stat-item"><div class="val" id="scoreCorrect">0</div><div class="lbl">Đúng</div></div>
+                <div class="stat-item"><div class="val" id="scoreTotal">0</div><div class="lbl">Tổng số</div></div>
+                <div class="stat-item"><div class="val" id="scorePercent">0%</div><div class="lbl">Tỉ lệ</div></div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <label style="margin:0;">Lịch sử làm bài</label>
+                <button class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="clearHistory()">Xóa lịch sử</button>
+            </div>
+
+            <div class="history-list" id="historyList"></div>
+        </div>
+    </div>
+
+    <!-- Scratchpad Bottom Drawer -->
+    <div class="scratchpad-drawer" id="scratchDrawer">
+        <div class="drawer-header">
+            <div class="drawer-tools">
+                <button class="tool-btn active" id="btnModeDraw" onclick="switchPadMode('draw')">✏️ Vẽ nháp</button>
+                <button class="tool-btn" id="btnModeText" onclick="switchPadMode('text')">📝 Ghi phím</button>
+                <div id="drawControls" style="display:flex; gap:6px; align-items:center; margin-left:8px;">
+                    <span class="color-dot selected" style="background:#000" onclick="setColor('#000', this)"></span>
+                    <span class="color-dot" style="background:#2563eb" onclick="setColor('#2563eb', this)"></span>
+                    <span class="color-dot" style="background:#ef4444" onclick="setColor('#ef4444', this)"></span>
+                    <button class="tool-btn" onclick="clearCanvas()">🗑️ Xóa nét</button>
+                </div>
+            </div>
+            <div class="drawer-tools">
+                <button class="tool-btn" id="btnExpand" onclick="toggleFullscreen()">🗖 Fullscreen</button>
+                <button class="tool-btn" onclick="toggleScratchpad(false)">✖ Đóng</button>
+            </div>
+        </div>
+        <div class="scratchpad-content">
+            <canvas id="scratchCanvas"></canvas>
+            <textarea id="scratchText" placeholder="Nháp bằng phím tại đây... (Tự động lưu)"></textarea>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <span>Toán 6: Phân số & Tìm x, y</span>
+        <button class="btn btn-secondary" style="padding:0.3rem 0.8rem; font-size:0.85rem;" onclick="toggleScratchpad()">✏️ Bảng Nháp</button>
+    </div>
+
+    <script>
+        // State Management
+        let state = {
+            topic: 'fraction',
+            difficulty: 'medium',
+            currentQuestion: null,
+            history: [],
+            stats: { correct: 0, total: 0 },
+            padMode: 'draw',
+            textNotes: ''
+        };
+
+        const STORAGE_KEY = 'math6_advanced_v2';
+
+        // Helpers for Math
+        function gcd(a, b) {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) { let t = b; b = a % b; a = t; }
+            return a;
+        }
+
+        function simplifyFraction(num, den) {
+            if (den === 0) return { num: 0, den: 1 };
+            if (den < 0) { num = -num; den = -den; }
+            let g = gcd(num, den);
+            return { num: num / g, den: den / g };
+        }
+
+        function formatFrac(num, den) {
+            let s = simplifyFraction(num, den);
+            if (s.den === 1) return `${s.num}`;
+            return `${s.num}/${s.den}`;
+        }
+
+        function getRandomInt(min, max) {
+            let res = Math.floor(Math.random() * (max - min + 1)) + min;
+            return res === 0 ? 1 : res;
+        }
+
+        function formatSigned(num) {
+            return num < 0 ? `(${num})` : `${num}`;
+        }
+
+        // Generator Logic
+        function generateQuestionData(topic, diff) {
+            let qText = "";
+            let answer = "";
+            let label = "Tính / Tìm x:";
+
+            if (topic === 'fraction') {
+                label = "Thực hiện phép tính phân số (rút gọn nếu có):";
+                // Generates fractions with non-reduced denominators or requiring LCM
+                let d1 = [4, 6, 8, 9, 12, 15, 18, 20][Math.floor(Math.random() * 8)];
+                let d2 = [6, 8, 10, 12, 15, 24, 30][Math.floor(Math.random() * 7)];
+                let n1 = getRandomInt(-10, 10);
+                let n2 = getRandomInt(-10, 10);
+
+                let ops = ['+', '-', '*'];
+                let op = ops[Math.floor(Math.random() * ops.length)];
+
+                if (diff === 'easy') {
+                    qText = `${n1}/${d1} ${op} ${n2}/${d2}`;
+                    if (op === '+') answer = formatFrac(n1 * d2 + n2 * d1, d1 * d2);
+                    else if (op === '-') answer = formatFrac(n1 * d2 - n2 * d1, d1 * d2);
+                    else answer = formatFrac(n1 * n2, d1 * d2);
+                } else {
+                    let d3 = [3, 5, 8, 12][Math.floor(Math.random() * 4)];
+                    let n3 = getRandomInt(-5, 5);
+                    qText = `(${n1}/${d1} ${op} ${n2}/${d2}) + ${n3}/${d3}`;
+                    let res1Num = 0, res1Den = d1 * d2;
+                    if (op === '+') res1Num = n1 * d2 + n2 * d1;
+                    else if (op === '-') res1Num = n1 * d2 - n2 * d1;
+                    else { res1Num = n1 * n2; res1Den = d1 * d2; }
+
+                    let finalNum = res1Num * d3 + n3 * res1Den;
+                    let finalDen = res1Den * d3;
+                    answer = formatFrac(finalNum, finalDen);
+                }
+            } 
+            else if (topic === 'find_x_mono') {
+                label = "Tìm x biết:";
+                // Format: a*x + b*x - c*x = k  => (a+b-c)x = k
+                let targetX = getRandomInt(-8, 8);
+                let a = getRandomInt(-6, 6);
+                let b = getRandomInt(-6, 6);
+                let c = getRandomInt(-6, 6);
+                let coeffSum = a + b - c;
+                if (coeffSum === 0) coeffSum = 2; // avoid zero coeff
+
+                let k = coeffSum * targetX;
+                qText = `${a}x + ${formatSigned(b)}x - ${formatSigned(c)}x = ${k}`;
+                answer = targetX.toString();
+            } 
+            else if (topic === 'find_x_poly') {
+                label = "Tìm x để đa thức sau bằng 0:";
+                let targetX = getRandomInt(-10, 10);
+                let a = getRandomInt(-5, 5);
+                let b = getRandomInt(-5, 5);
+
+                // Expression: (a*x + b) + (c*x + d) = 0
+                let constPart = -(a + b) * targetX; 
+                qText = `(${a}x ${b>=0?'+':''}${b}) + (${b}x ${constPart>=0?'+':''}${constPart}) = 0`;
+                answer = targetX.toString();
+            }
+
+            return { question: qText, answer: answer.trim(), label: label };
+        }
+
+        function generateQuestion() {
+            const topic = document.getElementById('topicSelect').value;
+            const diff = document.getElementById('diffSelect').value;
+            
+            state.topic = topic;
+            state.difficulty = diff;
+            state.currentQuestion = generateQuestionData(topic, diff);
+
+            document.getElementById('questionLabel').innerText = state.currentQuestion.label;
+            document.getElementById('questionDisplay').innerText = state.currentQuestion.question;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('answerInput').focus();
+
+            saveState();
+        }
+
+        function normalizeStr(str) {
+            return str.replace(/\s+/g, '').replace(/x=/g, '').toLowerCase();
+        }
+
+        function checkAnswer(e) {
+            e.preventDefault();
+            if (!state.currentQuestion) return;
+
+            const userAns = document.getElementById('answerInput').value.trim();
+            if (!userAns) return;
+
+            const isCorrect = normalizeStr(userAns) === normalizeStr(state.currentQuestion.answer);
+            const feedbackEl = document.getElementById('feedback');
+
+            state.stats.total++;
+            if (isCorrect) {
+                state.stats.correct++;
+                feedbackEl.className = 'feedback correct';
+                feedbackEl.innerHTML = `🎉 Chính xác! Đáp án: <strong>${state.currentQuestion.answer}</strong>`;
+            } else {
+                feedbackEl.className = 'feedback incorrect';
+                feedbackEl.innerHTML = `❌ Chưa đúng! Đáp án đúng: <strong>${state.currentQuestion.answer}</strong>`;
+            }
+
+            state.history.unshift({
+                question: state.currentQuestion.question,
+                userAns: userAns,
+                correctAns: state.currentQuestion.answer,
+                isCorrect: isCorrect,
+                timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            });
+
+            updateStatsDisplay();
+            renderHistory();
+            saveState();
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('scoreCorrect').innerText = state.stats.correct;
+            document.getElementById('scoreTotal').innerText = state.stats.total;
+            let pct = state.stats.total === 0 ? 0 : Math.round((state.stats.correct / state.stats.total) * 100);
+            document.getElementById('scorePercent').innerText = pct + '%';
+        }
+
+        function renderHistory() {
+            const listEl = document.getElementById('historyList');
+            listEl.innerHTML = '';
+            state.history.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `history-item ${item.isCorrect ? 'pass' : 'fail'}`;
+                div.innerHTML = `
+                    <div>
+                        <strong>${item.question}</strong><br>
+                        <span style="color:#666;">Nhập: ${item.userAns} ${!item.isCorrect ? `(Đúng: ${item.correctAns})` : ''}</span>
+                    </div>
+                    <span style="font-size:0.75rem; color:#888;">${item.timestamp}</span>
+                `;
+                listEl.appendChild(div);
+            });
+        }
+
+        function clearHistory() {
+            if (confirm('Xóa toàn bộ lịch sử làm bài?')) {
+                state.history = [];
+                state.stats = { correct: 0, total: 0 };
+                updateStatsDisplay();
+                renderHistory();
+                saveState();
+            }
+        }
+
+        // LocalStorage Sync
+        function saveState() {
+            state.textNotes = document.getElementById('scratchText').value;
+            const canvas = document.getElementById('scratchCanvas');
+            const payload = { ...state, canvasData: canvas.toDataURL() };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) { generateQuestion(); return; }
+
+            try {
+                const data = JSON.parse(saved);
+                state = { ...state, ...data };
+                document.getElementById('topicSelect').value = state.topic || 'fraction';
+                document.getElementById('diffSelect').value = state.difficulty || 'medium';
+                document.getElementById('scratchText').value = state.textNotes || '';
+
+                if (state.currentQuestion) {
+                    document.getElementById('questionLabel').innerText = state.currentQuestion.label || "Bài tập:";
+                    document.getElementById('questionDisplay').innerText = state.currentQuestion.question;
+                } else {
+                    generateQuestion();
+                }
+
+                updateStatsDisplay();
+                renderHistory();
+
+                if (data.canvasData) {
+                    let img = new Image();
+                    img.onload = () => ctx.drawImage(img, 0, 0);
+                    img.src = data.canvasData;
+                }
+            } catch (e) {
+                generateQuestion();
+            }
+        }
+
+        // Scratchpad Logic
+        let drawerOpen = false, isFullscreen = false;
+        function toggleScratchpad(force) {
+            const drawer = document.getElementById('scratchDrawer');
+            drawerOpen = force !== undefined ? force : !drawerOpen;
+            drawer.classList.toggle('open', drawerOpen);
+            if (drawerOpen) resizeCanvas();
+        }
+
+        function toggleFullscreen() {
+            const drawer = document.getElementById('scratchDrawer');
+            isFullscreen = !isFullscreen;
+            drawer.classList.toggle('fullscreen', isFullscreen);
+            document.getElementById('btnExpand').innerText = isFullscreen ? '🗗 Thu nhỏ' : '🗖 Fullscreen';
+            setTimeout(resizeCanvas, 200);
+        }
+
+        function switchPadMode(mode) {
+            state.padMode = mode;
+            document.getElementById('btnModeDraw').classList.toggle('active', mode === 'draw');
+            document.getElementById('btnModeText').classList.toggle('active', mode === 'text');
+            document.getElementById('scratchCanvas').style.display = mode === 'draw' ? 'block' : 'none';
+            document.getElementById('scratchText').style.display = mode === 'text' ? 'block' : 'none';
+            document.getElementById('drawControls').style.display = mode === 'draw' ? 'flex' : 'none';
+        }
+
+        // Canvas Engine
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false, strokeColor = '#000000';
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const temp = document.createElement('canvas');
+            temp.width = canvas.width; temp.height = canvas.height;
+            temp.getContext('2d').drawImage(canvas, 0, 0);
+
+            canvas.width = rect.width; canvas.height = rect.height;
+            ctx.drawImage(temp, 0, 0);
+            ctx.strokeStyle = strokeColor; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+        }
+
+        function setColor(color, el) {
+            strokeColor = color; ctx.strokeStyle = color;
+            document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); saveState(); }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function startDrawing(e) { isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); }
+        function draw(e) { if (!isDrawing) return; const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); }
+        function stopDrawing() { if (isDrawing) { isDrawing = false; saveState(); } }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+        canvas.addEventListener('touchstart', (e) => { startDrawing(e); e.preventDefault(); });
+        canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        document.getElementById('scratchText').addEventListener('input', saveState);
+        window.addEventListener('resize', resizeCanvas);
+
+        window.onload = function() { loadState(); resizeCanvas(); };
+    </script>
+</body>
+</html>
