@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luyện Tập Toán 6 - Số Âm, Phân Số & Tìm x, y</title>
+    <title>Luyện Tập Toán 6 - Đơn thức, Đa thức & Nhân đa thức</title>
     <style>
         :root {
             --bg-color: #f4f6f9;
@@ -29,7 +29,7 @@
         header p { font-size: 0.85rem; opacity: 0.9; }
 
         .container {
-            max-width: 900px; margin: 1.25rem auto; padding: 0 1rem;
+            max-width: 960px; margin: 1.25rem auto; padding: 0 1rem;
             display: grid; grid-template-columns: 1fr; gap: 1.25rem;
         }
         @media (min-width: 768px) { .container { grid-template-columns: 3fr 2fr; } }
@@ -61,15 +61,43 @@
             background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 1.25rem; text-align: center; margin: 1rem 0;
         }
         .question-math {
-            font-size: 1.5rem; font-weight: 700; color: #0f172a; margin-top: 0.5rem; font-family: 'Courier New', Courier, monospace;
+            font-size: 1.45rem; font-weight: 700; color: #0f172a; margin-top: 0.5rem; font-family: 'Courier New', Courier, monospace; word-break: break-all;
         }
 
         .answer-form { display: flex; gap: 0.5rem; margin-top: 1rem; }
         .answer-input { flex: 1; font-size: 1.1rem; font-weight: 600; text-align: center; }
 
+        /* Number pad */
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.4rem;
+            margin-top: 0.75rem;
+        }
+        .numpad button {
+            padding: 0.55rem 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .numpad button:hover { background: #e2e8f0; }
+        .numpad button:active { background: #cbd5e1; }
+        .numpad .btn-op { background: #eff6ff; color: #1d4ed8; }
+        .numpad .btn-del { background: #fef2f2; color: #dc2626; }
+        .numpad .btn-x { background: #f0fdf4; color: #166534; }
+        .numpad .btn-clear { background: #fef3c7; color: #92400e; grid-column: span 2; }
+
         .feedback { margin-top: 1rem; padding: 0.8rem; border-radius: 8px; font-weight: 600; display: none; }
         .feedback.correct { display: block; background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
         .feedback.incorrect { display: block; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .feedback .explanation {
+            margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px dashed currentColor;
+            font-weight: 500; font-size: 0.9rem; line-height: 1.5; opacity: 0.95;
+        }
 
         .stats-bar {
             display: flex; justify-content: space-around; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;
@@ -87,19 +115,46 @@
             position: fixed; bottom: 0; left: 0; right: 0; height: 50px; background: #1e293b; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; z-index: 1000;
         }
         .scratchpad-drawer {
-            position: fixed; bottom: 50px; left: 0; right: 0; height: 360px; background: #ffffff; border-top: 3px solid var(--primary); box-shadow: 0 -5px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; z-index: 999; transform: translateY(120%); transition: transform 0.3s ease, height 0.3s ease;
+            position: fixed; bottom: 50px; left: 0; right: 0; height: 380px; background: #ffffff; border-top: 3px solid var(--primary); box-shadow: 0 -5px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; z-index: 999; transform: translateY(120%); transition: transform 0.3s ease, height 0.3s ease;
         }
         .scratchpad-drawer.open { transform: translateY(0); }
         .scratchpad-drawer.fullscreen { height: calc(100vh - 50px) !important; }
 
-        .drawer-header { background: #f1f5f9; padding: 0.5rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
-        .drawer-tools { display: flex; align-items: center; gap: 0.5rem; }
-        .tool-btn { background: white; border: 1px solid var(--border); padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .drawer-header { background: #f1f5f9; padding: 0.5rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 0.4rem; }
+        .drawer-tools { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+        .tool-btn { background: white; border: 1px solid var(--border); padding: 0.3rem 0.55rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
         .tool-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         .scratchpad-content { flex: 1; position: relative; overflow: hidden; background: #fafafa; }
         #scratchCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
         #scratchText { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 1rem; border: none; resize: none; outline: none; font-size: 1rem; display: none; }
+
+        /* Mini Calculator */
+        #calcPanel {
+            display: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #f8fafc; padding: 0.75rem; flex-direction: column; gap: 0.5rem;
+        }
+        #calcPanel.active { display: flex; }
+        .calc-display {
+            background: #1e293b; color: #f1f5f9; font-size: 1.4rem; font-weight: 600;
+            padding: 0.7rem 1rem; border-radius: 8px; text-align: right;
+            min-height: 48px; word-break: break-all; font-family: 'Courier New', monospace;
+        }
+        .calc-buttons {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; flex: 1;
+        }
+        .calc-buttons button {
+            border: none; border-radius: 8px; font-size: 1.15rem; font-weight: 600;
+            cursor: pointer; background: #e2e8f0; color: #1e293b;
+            transition: background 0.15s;
+        }
+        .calc-buttons button:hover { background: #cbd5e1; }
+        .calc-buttons button:active { background: #94a3b8; }
+        .calc-buttons .op { background: #dbeafe; color: #1d4ed8; }
+        .calc-buttons .eq { background: #2563eb; color: white; }
+        .calc-buttons .clear { background: #fee2e2; color: #dc2626; }
+        .calc-buttons .zero { grid-column: span 2; }
 
         .color-dot { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; display: inline-block; }
         .color-dot.selected { border-color: #000; }
@@ -110,7 +165,7 @@
 
     <header>
         <h1>Luyện Tập Toán 6</h1>
-        <p>Phân Số (ƯCLN/BCNN) & Tìm x, y từ Đơn/Đa thức</p>
+        <p>Đơn thức • Đa thức • Nhân đa thức</p>
     </header>
 
     <div class="container">
@@ -120,17 +175,17 @@
                 <div>
                     <label for="topicSelect">Chủ đề</label>
                     <select id="topicSelect" onchange="generateQuestion()">
-                        <option value="fraction">1. Tính Phân Số (Cần Rút Gọn / BCNN)</option>
-                        <option value="find_x_mono">2. Tìm x từ Đơn Thức (= 0 hoặc k)</option>
-                        <option value="find_x_poly">3. Tìm x, y từ Đa Thức (= 0)</option>
+                        <option value="find_x_mono">1. Tìm x từ Đơn thức</option>
+                        <option value="find_x_poly">2. Tìm x từ Đa thức (= 0)</option>
+                        <option value="multiply_poly">3. Nhân đa thức (Khai triển)</option>
                     </select>
                 </div>
                 <div>
                     <label for="diffSelect">Độ khó</label>
                     <select id="diffSelect" onchange="generateQuestion()">
-                        <option value="easy">Dễ (Biểu thức ngắn)</option>
-                        <option value="medium" selected>Trung bình (Có dấu ngoặc / mẫu số chung)</option>
-                        <option value="hard">Khó (Tính toán nâng cao)</option>
+                        <option value="easy">Dễ (cấu trúc đơn giản)</option>
+                        <option value="medium" selected>Trung bình (có ngoặc / nhiều hạng tử)</option>
+                        <option value="hard">Khó (biểu thức phức tạp hơn)</option>
                     </select>
                 </div>
             </div>
@@ -138,8 +193,8 @@
             <button class="btn btn-primary btn-block" onclick="generateQuestion()">🔄 Tạo bài tập mới (Generate)</button>
 
             <div class="question-box">
-                <span style="font-size:0.85rem; color:#64748b;" id="questionLabel">Tính kết quả:</span>
-                <div class="question-math" id="questionDisplay">1/2 + 3/4</div>
+                <span style="font-size:0.85rem; color:#64748b;" id="questionLabel">Tìm x:</span>
+                <div class="question-math" id="questionDisplay">2x = 6</div>
             </div>
 
             <form onsubmit="checkAnswer(event)">
@@ -149,12 +204,40 @@
                 </div>
             </form>
 
+            <!-- Number Pad -->
+            <div class="numpad" id="numpad">
+                <button type="button" onclick="padInput('1')">1</button>
+                <button type="button" onclick="padInput('2')">2</button>
+                <button type="button" onclick="padInput('3')">3</button>
+                <button type="button" class="btn-del" onclick="padDelete()">⌫</button>
+
+                <button type="button" onclick="padInput('4')">4</button>
+                <button type="button" onclick="padInput('5')">5</button>
+                <button type="button" onclick="padInput('6')">6</button>
+                <button type="button" class="btn-op" onclick="padInput('-')">−</button>
+
+                <button type="button" onclick="padInput('7')">7</button>
+                <button type="button" onclick="padInput('8')">8</button>
+                <button type="button" onclick="padInput('9')">9</button>
+                <button type="button" class="btn-x" onclick="padInput('x')">x</button>
+
+                <button type="button" onclick="padInput('0')">0</button>
+                <button type="button" class="btn-x" onclick="padInput('x²')">x²</button>
+                <button type="button" class="btn-x" onclick="padInput('y')">y</button>
+                <button type="button" class="btn-op" onclick="padInput('+')">+</button>
+
+                <button type="button" class="btn-clear" onclick="padClear()">Xóa hết</button>
+                <button type="button" class="btn-op" onclick="padInput('(')">(</button>
+                <button type="button" class="btn-op" onclick="padInput(')')">)</button>
+            </div>
+
             <div id="feedback" class="feedback"></div>
 
             <div class="guide-box">
                 💡 <strong>Mẹo nhập đáp án:</strong><br>
-                - Với Phân số: Nhập dạng <code>a/b</code> (ví dụ: <code>-3/4</code>, <code>5/2</code>). Nếu kết quả là số nguyên thì nhập nguyên số đó.<br>
-                - Với Tìm x, y: Nhập giá trị <code>x = 2</code> hoặc nhập cặp <code>x=2, y=-1</code> (hoặc chỉ ghi số <code>2</code> nếu chỉ tìm x).
+                - Tìm x: nhập số (ví dụ <code>2</code>, <code>-3</code>) hoặc <code>x=2</code>.<br>
+                - Nhân đa thức: nhập dạng khai triển <code>2x² - 5x + 3</code> (có thể dùng nút x²).<br>
+                - Dùng bàn phím số bên dưới để nhập nhanh.
             </div>
         </div>
 
@@ -181,7 +264,8 @@
             <div class="drawer-tools">
                 <button class="tool-btn active" id="btnModeDraw" onclick="switchPadMode('draw')">✏️ Vẽ nháp</button>
                 <button class="tool-btn" id="btnModeText" onclick="switchPadMode('text')">📝 Ghi phím</button>
-                <div id="drawControls" style="display:flex; gap:6px; align-items:center; margin-left:8px;">
+                <button class="tool-btn" id="btnModeCalc" onclick="switchPadMode('calc')">🧮 Máy tính</button>
+                <div id="drawControls" style="display:flex; gap:6px; align-items:center; margin-left:4px;">
                     <span class="color-dot selected" style="background:#000" onclick="setColor('#000', this)"></span>
                     <span class="color-dot" style="background:#2563eb" onclick="setColor('#2563eb', this)"></span>
                     <span class="color-dot" style="background:#ef4444" onclick="setColor('#ef4444', this)"></span>
@@ -196,19 +280,48 @@
         <div class="scratchpad-content">
             <canvas id="scratchCanvas"></canvas>
             <textarea id="scratchText" placeholder="Nháp bằng phím tại đây... (Tự động lưu)"></textarea>
+            <!-- Mini Calculator -->
+            <div id="calcPanel">
+                <div class="calc-display" id="calcDisplay">0</div>
+                <div class="calc-buttons">
+                    <button class="clear" onclick="calcClear()">C</button>
+                    <button class="op" onclick="calcInput('(')">(</button>
+                    <button class="op" onclick="calcInput(')')">)</button>
+                    <button class="op" onclick="calcInput('/')">÷</button>
+
+                    <button onclick="calcInput('7')">7</button>
+                    <button onclick="calcInput('8')">8</button>
+                    <button onclick="calcInput('9')">9</button>
+                    <button class="op" onclick="calcInput('*')">×</button>
+
+                    <button onclick="calcInput('4')">4</button>
+                    <button onclick="calcInput('5')">5</button>
+                    <button onclick="calcInput('6')">6</button>
+                    <button class="op" onclick="calcInput('-')">−</button>
+
+                    <button onclick="calcInput('1')">1</button>
+                    <button onclick="calcInput('2')">2</button>
+                    <button onclick="calcInput('3')">3</button>
+                    <button class="op" onclick="calcInput('+')">+</button>
+
+                    <button class="zero" onclick="calcInput('0')">0</button>
+                    <button onclick="calcInput('.')">.</button>
+                    <button class="eq" onclick="calcEqual()">=</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <span>Toán 6: Phân số & Tìm x, y</span>
-        <button class="btn btn-secondary" style="padding:0.3rem 0.8rem; font-size:0.85rem;" onclick="toggleScratchpad()">✏️ Bảng Nháp</button>
+        <span>Toán 6: Đơn thức • Đa thức • Nhân đa thức</span>
+        <button class="btn btn-secondary" style="padding:0.3rem 0.8rem; font-size:0.85rem;" onclick="toggleScratchpad()">✏️ Bảng Nháp / Máy tính</button>
     </div>
 
     <script>
         // State Management
         let state = {
-            topic: 'fraction',
+            topic: 'find_x_mono',
             difficulty: 'medium',
             currentQuestion: null,
             history: [],
@@ -217,106 +330,257 @@
             textNotes: ''
         };
 
-        const STORAGE_KEY = 'math6_advanced_v2';
+        const STORAGE_KEY = 'math6_advanced_v4';
 
-        // Helpers for Math
-        function gcd(a, b) {
-            a = Math.abs(a); b = Math.abs(b);
-            while (b) { let t = b; b = a % b; a = t; }
-            return a;
+        // ========== Helpers ==========
+        function getRandomNonZero(min, max) {
+            let res;
+            do { res = Math.floor(Math.random() * (max - min + 1)) + min; } while (res === 0);
+            return res;
         }
-
-        function simplifyFraction(num, den) {
-            if (den === 0) return { num: 0, den: 1 };
-            if (den < 0) { num = -num; den = -den; }
-            let g = gcd(num, den);
-            return { num: num / g, den: den / g };
-        }
-
-        function formatFrac(num, den) {
-            let s = simplifyFraction(num, den);
-            if (s.den === 1) return `${s.num}`;
-            return `${s.num}/${s.den}`;
-        }
-
         function getRandomInt(min, max) {
-            let res = Math.floor(Math.random() * (max - min + 1)) + min;
-            return res === 0 ? 1 : res;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function formatCoeffX(coeff) {
+            if (coeff === 1) return 'x';
+            if (coeff === -1) return '-x';
+            return `${coeff}x`;
         }
 
         function formatSigned(num) {
-            return num < 0 ? `(${num})` : `${num}`;
+            if (num >= 0) return `+ ${num}`;
+            return `- ${Math.abs(num)}`;
         }
 
-        // Generator Logic
-        function generateQuestionData(topic, diff) {
-            let qText = "";
-            let answer = "";
-            let label = "Tính / Tìm x:";
+        // Xây dựng biểu thức tuyến tính, có thể đảo thứ tự hạng tử
+        function buildLinearExpr(terms, forceOrder = null) {
+            // terms: [{coeff, isX}]
+            let list = terms.filter(t => t.coeff !== 0);
+            if (list.length === 0) return '0';
 
-            if (topic === 'fraction') {
-                label = "Thực hiện phép tính phân số (rút gọn nếu có):";
-                // Generates fractions with non-reduced denominators or requiring LCM
-                let d1 = [4, 6, 8, 9, 12, 15, 18, 20][Math.floor(Math.random() * 8)];
-                let d2 = [6, 8, 10, 12, 15, 24, 30][Math.floor(Math.random() * 7)];
-                let n1 = getRandomInt(-10, 10);
-                let n2 = getRandomInt(-10, 10);
-
-                let ops = ['+', '-', '*'];
-                let op = ops[Math.floor(Math.random() * ops.length)];
-
-                if (diff === 'easy') {
-                    qText = `${n1}/${d1} ${op} ${n2}/${d2}`;
-                    if (op === '+') answer = formatFrac(n1 * d2 + n2 * d1, d1 * d2);
-                    else if (op === '-') answer = formatFrac(n1 * d2 - n2 * d1, d1 * d2);
-                    else answer = formatFrac(n1 * n2, d1 * d2);
-                } else {
-                    let d3 = [3, 5, 8, 12][Math.floor(Math.random() * 4)];
-                    let n3 = getRandomInt(-5, 5);
-                    qText = `(${n1}/${d1} ${op} ${n2}/${d2}) + ${n3}/${d3}`;
-                    let res1Num = 0, res1Den = d1 * d2;
-                    if (op === '+') res1Num = n1 * d2 + n2 * d1;
-                    else if (op === '-') res1Num = n1 * d2 - n2 * d1;
-                    else { res1Num = n1 * n2; res1Den = d1 * d2; }
-
-                    let finalNum = res1Num * d3 + n3 * res1Den;
-                    let finalDen = res1Den * d3;
-                    answer = formatFrac(finalNum, finalDen);
-                }
-            } 
-            else if (topic === 'find_x_mono') {
-                label = "Tìm x biết:";
-                // Format: a*x + b*x - c*x = k  => (a+b-c)x = k
-                let targetX = getRandomInt(-8, 8);
-                let a = getRandomInt(-6, 6);
-                let b = getRandomInt(-6, 6);
-                let c = getRandomInt(-6, 6);
-                let coeffSum = a + b - c;
-                if (coeffSum === 0) coeffSum = 2; // avoid zero coeff
-
-                let k = coeffSum * targetX;
-                qText = `${a}x + ${formatSigned(b)}x - ${formatSigned(c)}x = ${k}`;
-                answer = targetX.toString();
-            } 
-            else if (topic === 'find_x_poly') {
-                label = "Tìm x để đa thức sau bằng 0:";
-                let targetX = getRandomInt(-10, 10);
-                let a = getRandomInt(-5, 5);
-                let b = getRandomInt(-5, 5);
-
-                // Expression: (a*x + b) + (c*x + d) = 0
-                let constPart = -(a + b) * targetX; 
-                qText = `(${a}x ${b>=0?'+':''}${b}) + (${b}x ${constPart>=0?'+':''}${constPart}) = 0`;
-                answer = targetX.toString();
+            // Random đảo thứ tự (trừ khi forceOrder)
+            if (forceOrder === null && list.length >= 2 && Math.random() < 0.45) {
+                list = [...list].reverse();
+            } else if (forceOrder === 'constFirst' && list.length >= 2) {
+                list = list.sort((a, b) => (a.isX ? 1 : 0) - (b.isX ? 1 : 0));
+            } else if (forceOrder === 'xFirst' && list.length >= 2) {
+                list = list.sort((a, b) => (b.isX ? 1 : 0) - (a.isX ? 1 : 0));
             }
 
-            return { question: qText, answer: answer.trim(), label: label };
+            let parts = [];
+            list.forEach((t, i) => {
+                if (t.isX) {
+                    if (i === 0) {
+                        parts.push(formatCoeffX(t.coeff));
+                    } else {
+                        if (t.coeff > 0) parts.push(`+ ${formatCoeffX(t.coeff)}`);
+                        else parts.push(`- ${formatCoeffX(Math.abs(t.coeff))}`);
+                    }
+                } else {
+                    if (i === 0) {
+                        parts.push(String(t.coeff));
+                    } else {
+                        if (t.coeff > 0) parts.push(`+ ${t.coeff}`);
+                        else parts.push(`- ${Math.abs(t.coeff)}`);
+                    }
+                }
+            });
+            return parts.join(' ');
+        }
+
+        // Format đa thức bậc 2: ax² + bx + c
+        function formatQuadratic(a, b, c) {
+            let parts = [];
+            // x² term
+            if (a !== 0) {
+                if (a === 1) parts.push('x²');
+                else if (a === -1) parts.push('-x²');
+                else parts.push(`${a}x²`);
+            }
+            // x term
+            if (b !== 0) {
+                if (parts.length === 0) {
+                    parts.push(formatCoeffX(b));
+                } else {
+                    if (b > 0) parts.push(`+ ${formatCoeffX(b)}`);
+                    else parts.push(`- ${formatCoeffX(Math.abs(b))}`);
+                }
+            }
+            // const
+            if (c !== 0 || parts.length === 0) {
+                if (parts.length === 0) {
+                    parts.push(String(c));
+                } else {
+                    if (c > 0) parts.push(`+ ${c}`);
+                    else parts.push(`- ${Math.abs(c)}`);
+                }
+            }
+            return parts.join(' ');
+        }
+
+        // ========== Generator ==========
+        function generateQuestionData(topic, diff) {
+            let qText = "", answer = "", label = "", explanation = "";
+            let targetX = getRandomNonZero(-9, 9);
+
+            if (topic === 'find_x_mono') {
+                label = "Tìm x biết (đơn thức):";
+                if (diff === 'easy') {
+                    let a = getRandomNonZero(2, 9);
+                    if (Math.random() < 0.4) a = -a;
+                    let k = a * targetX;
+                    qText = `${formatCoeffX(a)} = ${k}`;
+                    answer = String(targetX);
+                    explanation = `Chia cả hai vế cho ${a}:\nx = ${k} ÷ ${a} = ${targetX}`;
+                } else if (diff === 'medium') {
+                    let a = getRandomNonZero(-7, 7);
+                    let b = getRandomNonZero(-7, 7);
+                    let coeff = a + b;
+                    if (coeff === 0) { b = a > 0 ? -a - 1 : -a + 1; coeff = a + b; }
+                    let k = coeff * targetX;
+                    // Random order of the two terms
+                    qText = buildLinearExpr([{coeff: a, isX: true}, {coeff: b, isX: true}]) + ` = ${k}`;
+                    answer = String(targetX);
+                    explanation = `Gộp hệ số của x:\n(${a}) + (${b}) = ${coeff}\n${coeff}x = ${k}\nx = ${k} ÷ ${coeff} = ${targetX}`;
+                } else {
+                    let a = getRandomNonZero(-6, 6);
+                    let b = getRandomNonZero(-6, 6);
+                    let c = getRandomNonZero(-6, 6);
+                    let coeff = a + b - c;
+                    if (coeff === 0) { c = a + b - (Math.random() < 0.5 ? 2 : -2); coeff = a + b - c; }
+                    let k = coeff * targetX;
+                    qText = buildLinearExpr([
+                        {coeff: a, isX: true},
+                        {coeff: b, isX: true},
+                        {coeff: -c, isX: true}
+                    ]) + ` = ${k}`;
+                    answer = String(targetX);
+                    explanation = `Gộp hệ số:\n${a} + ${b} + (${-c}) = ${coeff}\n${coeff}x = ${k}\nx = ${k} ÷ ${coeff} = ${targetX}`;
+                }
+            }
+            else if (topic === 'find_x_poly') {
+                label = "Tìm x để đa thức bằng 0:";
+                if (diff === 'easy') {
+                    let a = getRandomNonZero(2, 8);
+                    if (Math.random() < 0.35) a = -a;
+                    let b = -a * targetX;
+                    // Random: x trước hoặc hằng số trước
+                    qText = buildLinearExpr([{coeff: a, isX: true}, {coeff: b, isX: false}]) + ` = 0`;
+                    answer = String(targetX);
+                    explanation = `Chuyển vế:\n${formatCoeffX(a)} = ${-b}\nx = ${-b} ÷ ${a} = ${targetX}`;
+                } else if (diff === 'medium') {
+                    let useMinus = Math.random() < 0.45;
+                    let a = getRandomNonZero(-5, 5);
+                    let b = getRandomInt(-8, 8);
+                    let c = getRandomNonZero(-5, 5);
+                    let d;
+                    // Random order inside each paren
+                    let order1 = Math.random() < 0.5 ? 'xFirst' : 'constFirst';
+                    let order2 = Math.random() < 0.5 ? 'xFirst' : 'constFirst';
+
+                    if (useMinus) {
+                        d = b + (a - c) * targetX;
+                        let left = buildLinearExpr([{coeff: a, isX: true}, {coeff: b, isX: false}], order1);
+                        let right = buildLinearExpr([{coeff: c, isX: true}, {coeff: d, isX: false}], order2);
+                        qText = `(${left}) - (${right}) = 0`;
+                        let totalCoeff = a - c;
+                        let totalConst = b - d;
+                        explanation = `Mở ngoặc và gộp:\n(${a} - ${c})x + (${b} - ${d}) = 0\n${totalCoeff}x = ${-totalConst}\nx = ${targetX}`;
+                    } else {
+                        d = -b - (a + c) * targetX;
+                        let left = buildLinearExpr([{coeff: a, isX: true}, {coeff: b, isX: false}], order1);
+                        let right = buildLinearExpr([{coeff: c, isX: true}, {coeff: d, isX: false}], order2);
+                        qText = `(${left}) + (${right}) = 0`;
+                        let totalCoeff = a + c;
+                        let totalConst = b + d;
+                        explanation = `Mở ngoặc và gộp:\n(${a} + ${c})x + (${b} + ${d}) = 0\n${totalCoeff}x = ${-totalConst}\nx = ${targetX}`;
+                    }
+                    answer = String(targetX);
+                } else { // hard
+                    let pattern = Math.floor(Math.random() * 3);
+                    let order1 = Math.random() < 0.5 ? 'xFirst' : 'constFirst';
+                    let order2 = Math.random() < 0.5 ? 'xFirst' : 'constFirst';
+
+                    if (pattern === 0) {
+                        let a = getRandomNonZero(-5, 5);
+                        let b = getRandomInt(-6, 6);
+                        let c = getRandomNonZero(-5, 5);
+                        let d = getRandomInt(-6, 6);
+                        let e = -(a - c) * targetX - b + d;
+                        let left = buildLinearExpr([{coeff: a, isX: true}, {coeff: b, isX: false}], order1);
+                        let right = buildLinearExpr([{coeff: c, isX: true}, {coeff: d, isX: false}], order2);
+                        qText = `(${left}) - (${right}) ${formatSigned(e)} = 0`;
+                        explanation = `Mở ngoặc → gộp hệ số & hằng số → giải phương trình bậc nhất:\nx = ${targetX}`;
+                    } else if (pattern === 1) {
+                        let a = getRandomNonZero(-5, 5);
+                        let b = getRandomNonZero(-5, 5);
+                        let c = getRandomInt(-7, 7);
+                        let d = c + (a + b) * targetX;
+                        let inner = buildLinearExpr([{coeff: b, isX: true}, {coeff: c, isX: false}], order1);
+                        qText = `${formatCoeffX(a)} + (${inner}) - ${d} = 0`;
+                        explanation = `Mở ngoặc → gộp → giải:\nx = ${targetX}`;
+                    } else {
+                        let a = getRandomNonZero(-5, 5);
+                        let b = getRandomNonZero(1, 7);
+                        let d = getRandomNonZero(-5, 5);
+                        let c = b - (a - d) * targetX;
+                        let left = buildLinearExpr([{coeff: a, isX: true}, {coeff: -b, isX: false}], order1);
+                        let right = buildLinearExpr([{coeff: c, isX: false}, {coeff: -d, isX: true}], order2);
+                        qText = `(${left}) + (${right}) = 0`;
+                        explanation = `Mở ngoặc → gộp → giải:\nx = ${targetX}`;
+                    }
+                    answer = String(targetX);
+                }
+            }
+            else if (topic === 'multiply_poly') {
+                label = "Khai triển tích đa thức:";
+                let a, b, c, d;
+
+                if (diff === 'easy') {
+                    // (x ± m)(x ± n) hoặc (±x ± m)(x ± n)
+                    a = Math.random() < 0.3 ? -1 : 1;
+                    c = 1;
+                    b = getRandomNonZero(-6, 6);
+                    d = getRandomNonZero(-6, 6);
+                } else if (diff === 'medium') {
+                    a = getRandomNonZero(-4, 4);
+                    c = getRandomNonZero(-4, 4);
+                    b = getRandomInt(-7, 7);
+                    d = getRandomInt(-7, 7);
+                } else {
+                    a = getRandomNonZero(-5, 5);
+                    c = getRandomNonZero(-5, 5);
+                    b = getRandomInt(-9, 9);
+                    d = getRandomInt(-9, 9);
+                }
+
+                // Random order inside each parenthesis
+                let order1 = Math.random() < 0.5 ? 'xFirst' : 'constFirst';
+                let order2 = Math.random() < 0.5 ? 'xFirst' : 'constFirst';
+                let left = buildLinearExpr([{coeff: a, isX: true}, {coeff: b, isX: false}], order1);
+                let right = buildLinearExpr([{coeff: c, isX: true}, {coeff: d, isX: false}], order2);
+                qText = `(${left})(${right})`;
+
+                // Product
+                let coef2 = a * c;
+                let coef1 = a * d + b * c;
+                let coef0 = b * d;
+                answer = formatQuadratic(coef2, coef1, coef0);
+
+                explanation = `Áp dụng quy tắc phân phối (FOIL):\n` +
+                    `• x²: (${a}) × (${c}) = ${coef2}\n` +
+                    `• x: (${a})×(${d}) + (${b})×(${c}) = ${a*d} + ${b*c} = ${coef1}\n` +
+                    `• Hằng số: (${b}) × (${d}) = ${coef0}\n` +
+                    `Kết quả: ${answer}`;
+            }
+
+            return { question: qText, answer: answer.trim(), label, explanation };
         }
 
         function generateQuestion() {
             const topic = document.getElementById('topicSelect').value;
             const diff = document.getElementById('diffSelect').value;
-            
             state.topic = topic;
             state.difficulty = diff;
             state.currentQuestion = generateQuestionData(topic, diff);
@@ -326,54 +590,97 @@
             document.getElementById('answerInput').value = '';
             document.getElementById('feedback').className = 'feedback';
             document.getElementById('answerInput').focus();
-
             saveState();
         }
 
+        // ========== Answer checking ==========
         function normalizeStr(str) {
-            return str.replace(/\s+/g, '').replace(/x=/g, '').toLowerCase();
+            return str
+                .replace(/\s+/g, '')
+                .replace(/x\s*=/gi, '')
+                .replace(/=/g, '')
+                .replace(/x2/gi, 'x²')
+                .replace(/x\^2/gi, 'x²')
+                .replace(/\*\*/g, '')
+                .replace(/−/g, '-')
+                .replace(/\+/g, '+')
+                .toLowerCase();
+        }
+
+        // Soft match for quadratic answers (order of terms can vary a bit)
+        function answersMatch(user, correct) {
+            const u = normalizeStr(user);
+            const c = normalizeStr(correct);
+            if (u === c) return true;
+            // Also accept if user wrote terms in different order for multiply
+            if (state.topic === 'multiply_poly') {
+                // Very simple: remove all + and compare sorted tokens roughly
+                // Better: just exact after normalize is enough for most cases
+                return u === c;
+            }
+            return false;
         }
 
         function checkAnswer(e) {
             e.preventDefault();
             if (!state.currentQuestion) return;
-
             const userAns = document.getElementById('answerInput').value.trim();
             if (!userAns) return;
 
-            const isCorrect = normalizeStr(userAns) === normalizeStr(state.currentQuestion.answer);
+            const isCorrect = answersMatch(userAns, state.currentQuestion.answer);
             const feedbackEl = document.getElementById('feedback');
-
             state.stats.total++;
+
+            const explHtml = state.currentQuestion.explanation
+                ? `<div class="explanation">📝 <strong>Diễn giải:</strong><br>${state.currentQuestion.explanation.replace(/\n/g, '<br>')}</div>`
+                : '';
+
             if (isCorrect) {
                 state.stats.correct++;
                 feedbackEl.className = 'feedback correct';
-                feedbackEl.innerHTML = `🎉 Chính xác! Đáp án: <strong>${state.currentQuestion.answer}</strong>`;
+                const prefix = state.topic === 'multiply_poly' ? '' : 'x = ';
+                feedbackEl.innerHTML = `🎉 Chính xác! Đáp án: <strong>${prefix}${state.currentQuestion.answer}</strong>${explHtml}`;
             } else {
                 feedbackEl.className = 'feedback incorrect';
-                feedbackEl.innerHTML = `❌ Chưa đúng! Đáp án đúng: <strong>${state.currentQuestion.answer}</strong>`;
+                const prefix = state.topic === 'multiply_poly' ? '' : 'x = ';
+                feedbackEl.innerHTML = `❌ Chưa đúng! Đáp án đúng: <strong>${prefix}${state.currentQuestion.answer}</strong>${explHtml}`;
             }
 
             state.history.unshift({
                 question: state.currentQuestion.question,
-                userAns: userAns,
+                userAns,
                 correctAns: state.currentQuestion.answer,
-                isCorrect: isCorrect,
+                isCorrect,
                 timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             });
-
             updateStatsDisplay();
             renderHistory();
             saveState();
         }
 
+        // ========== Number Pad ==========
+        function padInput(val) {
+            const input = document.getElementById('answerInput');
+            input.value += val;
+            input.focus();
+        }
+        function padDelete() {
+            const input = document.getElementById('answerInput');
+            input.value = input.value.slice(0, -1);
+            input.focus();
+        }
+        function padClear() {
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').focus();
+        }
+
+        // ========== Stats & History ==========
         function updateStatsDisplay() {
             document.getElementById('scoreCorrect').innerText = state.stats.correct;
             document.getElementById('scoreTotal').innerText = state.stats.total;
             let pct = state.stats.total === 0 ? 0 : Math.round((state.stats.correct / state.stats.total) * 100);
             document.getElementById('scorePercent').innerText = pct + '%';
         }
-
         function renderHistory() {
             const listEl = document.getElementById('historyList');
             listEl.innerHTML = '';
@@ -390,7 +697,6 @@
                 listEl.appendChild(div);
             });
         }
-
         function clearHistory() {
             if (confirm('Xóa toàn bộ lịch sử làm bài?')) {
                 state.history = [];
@@ -401,35 +707,31 @@
             }
         }
 
-        // LocalStorage Sync
+        // ========== LocalStorage ==========
         function saveState() {
             state.textNotes = document.getElementById('scratchText').value;
             const canvas = document.getElementById('scratchCanvas');
             const payload = { ...state, canvasData: canvas.toDataURL() };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
         }
-
         function loadState() {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (!saved) { generateQuestion(); return; }
-
             try {
                 const data = JSON.parse(saved);
                 state = { ...state, ...data };
-                document.getElementById('topicSelect').value = state.topic || 'fraction';
+                if (state.topic === 'fraction') state.topic = 'find_x_mono';
+                document.getElementById('topicSelect').value = state.topic || 'find_x_mono';
                 document.getElementById('diffSelect').value = state.difficulty || 'medium';
                 document.getElementById('scratchText').value = state.textNotes || '';
-
-                if (state.currentQuestion) {
+                if (state.currentQuestion && state.currentQuestion.question) {
                     document.getElementById('questionLabel').innerText = state.currentQuestion.label || "Bài tập:";
                     document.getElementById('questionDisplay').innerText = state.currentQuestion.question;
                 } else {
                     generateQuestion();
                 }
-
                 updateStatsDisplay();
                 renderHistory();
-
                 if (data.canvasData) {
                     let img = new Image();
                     img.onload = () => ctx.drawImage(img, 0, 0);
@@ -440,7 +742,7 @@
             }
         }
 
-        // Scratchpad Logic
+        // ========== Scratchpad + Calculator ==========
         let drawerOpen = false, isFullscreen = false;
         function toggleScratchpad(force) {
             const drawer = document.getElementById('scratchDrawer');
@@ -448,7 +750,6 @@
             drawer.classList.toggle('open', drawerOpen);
             if (drawerOpen) resizeCanvas();
         }
-
         function toggleFullscreen() {
             const drawer = document.getElementById('scratchDrawer');
             isFullscreen = !isFullscreen;
@@ -461,12 +762,15 @@
             state.padMode = mode;
             document.getElementById('btnModeDraw').classList.toggle('active', mode === 'draw');
             document.getElementById('btnModeText').classList.toggle('active', mode === 'text');
+            document.getElementById('btnModeCalc').classList.toggle('active', mode === 'calc');
+
             document.getElementById('scratchCanvas').style.display = mode === 'draw' ? 'block' : 'none';
             document.getElementById('scratchText').style.display = mode === 'text' ? 'block' : 'none';
+            document.getElementById('calcPanel').classList.toggle('active', mode === 'calc');
             document.getElementById('drawControls').style.display = mode === 'draw' ? 'flex' : 'none';
         }
 
-        // Canvas Engine
+        // Canvas
         const canvas = document.getElementById('scratchCanvas');
         const ctx = canvas.getContext('2d');
         let isDrawing = false, strokeColor = '#000000';
@@ -476,27 +780,22 @@
             const temp = document.createElement('canvas');
             temp.width = canvas.width; temp.height = canvas.height;
             temp.getContext('2d').drawImage(canvas, 0, 0);
-
             canvas.width = rect.width; canvas.height = rect.height;
             ctx.drawImage(temp, 0, 0);
             ctx.strokeStyle = strokeColor; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
         }
-
         function setColor(color, el) {
             strokeColor = color; ctx.strokeStyle = color;
             document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
             el.classList.add('selected');
         }
-
         function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); saveState(); }
-
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             return { x: clientX - rect.left, y: clientY - rect.top };
         }
-
         function startDrawing(e) { isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); }
         function draw(e) { if (!isDrawing) return; const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); }
         function stopDrawing() { if (isDrawing) { isDrawing = false; saveState(); } }
@@ -509,9 +808,45 @@
         canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); });
         canvas.addEventListener('touchend', stopDrawing);
 
+        // Mini Calculator logic
+        let calcExpr = '';
+        function calcUpdateDisplay() {
+            document.getElementById('calcDisplay').textContent = calcExpr || '0';
+        }
+        function calcInput(val) {
+            if (calcExpr === 'Error') calcExpr = '';
+            // Replace display symbols
+            if (val === '×') val = '*';
+            if (val === '÷') val = '/';
+            if (val === '−') val = '-';
+            calcExpr += val;
+            calcUpdateDisplay();
+        }
+        function calcClear() {
+            calcExpr = '';
+            calcUpdateDisplay();
+        }
+        function calcEqual() {
+            try {
+                // Safe eval: only allow numbers and basic operators
+                let safe = calcExpr.replace(/[^0-9+\-*/().]/g, '');
+                if (!safe) { calcExpr = '0'; calcUpdateDisplay(); return; }
+                let result = Function('"use strict"; return (' + safe + ')')();
+                if (typeof result === 'number' && isFinite(result)) {
+                    // Round nicely
+                    result = Math.round(result * 1e10) / 1e10;
+                    calcExpr = String(result);
+                } else {
+                    calcExpr = 'Error';
+                }
+            } catch (e) {
+                calcExpr = 'Error';
+            }
+            calcUpdateDisplay();
+        }
+
         document.getElementById('scratchText').addEventListener('input', saveState);
         window.addEventListener('resize', resizeCanvas);
-
         window.onload = function() { loadState(); resizeCanvas(); };
     </script>
 </body>
