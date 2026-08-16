@@ -392,6 +392,65 @@
             margin-top: 0.5rem;
             line-height: 1.4;
         }
+
+        /* Keypad */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.4rem;
+            margin-top: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .key-btn {
+            padding: 0.55rem 0.2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #f8fafc;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+
+        .key-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .key-btn:active {
+            transform: scale(0.96);
+            background: #cbd5e1;
+        }
+
+        .key-btn.key-var {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-color: #bfdbfe;
+        }
+
+        .key-btn.key-op {
+            background: #f5f3ff;
+            color: #6d28d9;
+            border-color: #ddd6fe;
+        }
+
+        .key-btn.key-del {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
+            grid-column: span 2;
+        }
+
+        @media (max-width: 480px) {
+            .keypad {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .key-btn.key-del {
+                grid-column: span 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -438,6 +497,28 @@
                     <button type="submit" class="btn btn-primary">Nộp bài</button>
                 </div>
             </form>
+
+            <!-- Keypad for quick input -->
+            <div class="keypad" id="keypad">
+                <button type="button" class="key-btn" onclick="appendToAnswer('1')">1</button>
+                <button type="button" class="key-btn" onclick="appendToAnswer('2')">2</button>
+                <button type="button" class="key-btn" onclick="appendToAnswer('3')">3</button>
+                <button type="button" class="key-btn" onclick="appendToAnswer('4')">4</button>
+                <button type="button" class="key-btn" onclick="appendToAnswer('5')">5</button>
+                <button type="button" class="key-btn" onclick="appendToAnswer('6')">6</button>
+                <button type="button" class="key-btn" onclick="appendToAnswer('7')">7</button>
+                <button type="button" class="key-btn" onclick="appendToAnswer('8')">8</button>
+                <button type="button" class="key-btn" onclick="appendToAnswer('9')">9</button>
+                <button type="button" class="key-btn" onclick="appendToAnswer('0')">0</button>
+                <button type="button" class="key-btn key-var" onclick="appendToAnswer('x')">x</button>
+                <button type="button" class="key-btn key-var" onclick="appendToAnswer('y')">y</button>
+                <button type="button" class="key-btn key-op" onclick="appendToAnswer('+')">+</button>
+                <button type="button" class="key-btn key-op" onclick="appendToAnswer('-')">−</button>
+                <button type="button" class="key-btn key-op" onclick="appendToAnswer('(')">(</button>
+                <button type="button" class="key-btn key-op" onclick="appendToAnswer(')')">)</button>
+                <button type="button" class="key-btn key-op" onclick="appendToAnswer('/')">/</button>
+                <button type="button" class="key-btn key-del" onclick="deleteLastChar()">⌫ Xóa</button>
+            </div>
 
             <div id="feedback" class="feedback"></div>
 
@@ -579,16 +660,46 @@
                     let resCoeff = coeff1 - coeff2 + coeff3;
                     answer = resCoeff === 0 ? "0" : (resCoeff === 1 ? v : (resCoeff === -1 ? `-${v}` : `${resCoeff}${v}`));
                 } else {
-                    // Two variables
-                    let v2 = 'y';
-                    qText = `${coeff1}x + ${coeff2}y - ${formatSigned(coeff3)}x`;
-                    let resX = coeff1 - coeff3;
-                    let termX = resX === 0 ? "" : (resX === 1 ? "x" : (resX === -1 ? "-x" : `${resX}x`));
-                    let termY = coeff2 === 0 ? "" : (coeff2 > 0 ? `+${coeff2}y` : `${coeff2}y`);
-                    if (termX !== "" && termY.startsWith("+")) {
-                        // Keep simple formatting
+                    // Hard: Two variables (x, y) — random order, random number of each, random signs
+                    // Generate 3 terms, each is either x or y (at least one of each)
+                    let terms = [];
+                    let coeffX = 0, coeffY = 0;
+                    // Ensure variety: decide how many x vs y (1 or 2 of one, rest the other)
+                    let numX = Math.random() < 0.5 ? 1 : 2;
+                    let numY = 3 - numX;
+                    // Create coefficients
+                    for (let i = 0; i < numX; i++) {
+                        let c = getRandomInt(-10, 10);
+                        coeffX += c;
+                        terms.push({ coeff: c, v: 'x' });
                     }
-                    answer = (termX + termY).replace(/^\+/, "");
+                    for (let i = 0; i < numY; i++) {
+                        let c = getRandomInt(-10, 10);
+                        coeffY += c;
+                        terms.push({ coeff: c, v: 'y' });
+                    }
+                    // Shuffle terms for random order
+                    for (let i = terms.length - 1; i > 0; i--) {
+                        let j = Math.floor(Math.random() * (i + 1));
+                        [terms[i], terms[j]] = [terms[j], terms[i]];
+                    }
+                    // Build question string
+                    qText = terms.map((t, idx) => {
+                        let sign = t.coeff >= 0 ? (idx === 0 ? '' : ' + ') : ' - ';
+                        let absC = Math.abs(t.coeff);
+                        let body = absC === 1 ? t.v : `${absC}${t.v}`;
+                        if (idx === 0 && t.coeff < 0) return `-${body}`;
+                        return sign + body;
+                    }).join('').replace(/^ \+ /, '').trim();
+                    // Build answer (always x then y for consistent checking)
+                    let termX = coeffX === 0 ? "" : (coeffX === 1 ? "x" : (coeffX === -1 ? "-x" : `${coeffX}x`));
+                    let termY = coeffY === 0 ? "" : (coeffY === 1 ? "y" : (coeffY === -1 ? "-y" : `${coeffY}y`));
+                    if (termX && termY) {
+                        answer = termX + (termY.startsWith('-') ? termY : `+${termY}`);
+                        answer = answer.replace(/^\+/, "");
+                    } else {
+                        answer = termX || termY || "0";
+                    }
                     if (answer === "") answer = "0";
                 }
             } 
@@ -597,9 +708,30 @@
                 let a1 = getRandomInt(-5, 5), b1 = getRandomInt(-5, 5);
                 let a2 = getRandomInt(-5, 5), b2 = getRandomInt(-5, 5);
 
+                // Helper: format one binomial with random term order (x first or constant first)
+                function formatBinomial(a, b) {
+                    let xPart = a === 0 ? "" : (a === 1 ? "x" : (a === -1 ? "-x" : `${a}x`));
+                    let cPart = b === 0 ? "" : `${b}`;
+                    if (!xPart && !cPart) return "0";
+                    if (!xPart) return cPart;
+                    if (!cPart) return xPart;
+                    // Random: x first or constant first
+                    if (Math.random() < 0.5) {
+                        // constant first
+                        let sign = a >= 0 ? " + " : " - ";
+                        let absA = Math.abs(a);
+                        let body = absA === 1 ? "x" : `${absA}x`;
+                        return `${b}${sign}${body}`;
+                    } else {
+                        // x first
+                        let sign = b >= 0 ? " + " : " - ";
+                        return `${xPart}${sign}${Math.abs(b)}`;
+                    }
+                }
+
                 if (diff === 'easy') {
-                    // (a1*x + b1) + (a2*x + b2)
-                    qText = `(${a1}x ${b1>=0?'+':''}${b1}) + (${a2}x ${b2>=0?'+':''}${b2})`;
+                    // ( ... ) + ( ... )
+                    qText = `(${formatBinomial(a1, b1)}) + (${formatBinomial(a2, b2)})`;
                     let resA = a1 + a2;
                     let resB = b1 + b2;
                     let partA = resA === 0 ? "" : (resA === 1 ? "x" : (resA === -1 ? "-x" : `${resA}x`));
@@ -607,8 +739,8 @@
                     answer = (partA + partB).replace(/^\+/, "");
                     if (answer === "") answer = "0";
                 } else {
-                    // (a1*x + b1) - (a2*x + b2)
-                    qText = `(${a1}x ${b1>=0?'+':''}${b1}) - (${a2}x ${b2>=0?'+':''}${b2})`;
+                    // ( ... ) - ( ... )
+                    qText = `(${formatBinomial(a1, b1)}) - (${formatBinomial(a2, b2)})`;
                     let resA = a1 - a2;
                     let resB = b1 - b2;
                     let partA = resA === 0 ? "" : (resA === 1 ? "x" : (resA === -1 ? "-x" : `${resA}x`));
@@ -638,7 +770,21 @@
         }
 
         function normalizeAnswer(str) {
-            return str.replace(/\s+/g, '').toLowerCase();
+            return str.replace(/\s+/g, '').toLowerCase().replace(/−/g, '-');
+        }
+
+        function appendToAnswer(char) {
+            const input = document.getElementById('answerInput');
+            // Convert fancy minus to normal minus
+            if (char === '−') char = '-';
+            input.value += char;
+            input.focus();
+        }
+
+        function deleteLastChar() {
+            const input = document.getElementById('answerInput');
+            input.value = input.value.slice(0, -1);
+            input.focus();
         }
 
         function checkAnswer(e) {
