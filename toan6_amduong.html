@@ -451,6 +451,83 @@
                 grid-column: span 1;
             }
         }
+
+        /* Mini Calculator */
+        .calc-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0.75rem;
+            background: #0f172a;
+            gap: 0.6rem;
+            overflow: auto;
+        }
+
+        .calc-display {
+            background: #1e293b;
+            color: #f1f5f9;
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: right;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            min-height: 3.2rem;
+            word-break: break-all;
+            border: 1px solid #334155;
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.45rem;
+            flex: 1;
+        }
+
+        .calc-btn {
+            border: none;
+            border-radius: 10px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding: 0.7rem 0.3rem;
+            cursor: pointer;
+            background: #334155;
+            color: #f8fafc;
+            transition: all 0.12s;
+            user-select: none;
+        }
+
+        .calc-btn:hover {
+            background: #475569;
+        }
+
+        .calc-btn:active {
+            transform: scale(0.95);
+            background: #64748b;
+        }
+
+        .calc-btn.calc-op {
+            background: #2563eb;
+            color: white;
+        }
+
+        .calc-btn.calc-op:hover {
+            background: #1d4ed8;
+        }
+
+        .calc-btn.calc-fn {
+            background: #475569;
+            color: #e2e8f0;
+        }
+
+        .calc-btn.calc-eq {
+            background: #10b981;
+            color: white;
+        }
+
+        .calc-btn.calc-eq:hover {
+            background: #059669;
+        }
     </style>
 </head>
 <body>
@@ -557,10 +634,10 @@
         </div>
     </div>
 
-    <!-- Scratchpad Bottom Drawer -->
+    <!-- Scratchpad / Calculator Bottom Drawer -->
     <div class="scratchpad-drawer" id="scratchDrawer">
         <div class="drawer-header">
-            <div class="drawer-tools">
+            <div class="drawer-tools" id="scratchTools">
                 <button class="tool-btn active" id="btnModeDraw" onclick="switchPadMode('draw')">✏️ Vẽ nháp</button>
                 <button class="tool-btn" id="btnModeText" onclick="switchPadMode('text')">📝 Ghi văn bản</button>
                 
@@ -575,23 +652,62 @@
                 </div>
             </div>
 
+            <div class="drawer-tools" id="calcTools" style="display:none;">
+                <span style="font-weight:600; font-size:0.9rem; color:#334155;">🧮 Máy tính mini</span>
+            </div>
+
             <div class="drawer-tools">
                 <button class="tool-btn" id="btnExpand" onclick="toggleFullscreen()">🗖 Toàn màn hình</button>
                 <button class="tool-btn" onclick="toggleScratchpad(false)">✖ Đóng</button>
             </div>
         </div>
-        <div class="scratchpad-content">
+        <div class="scratchpad-content" id="scratchContent">
             <canvas id="scratchCanvas"></canvas>
             <textarea id="scratchText" placeholder="Ghi chú nháp bằng phím tại đây... (Tự động lưu)"></textarea>
+        </div>
+        <!-- Calculator Panel -->
+        <div class="calc-panel" id="calcPanel" style="display:none;">
+            <div class="calc-display" id="calcDisplay">0</div>
+            <div class="calc-buttons">
+                <button class="calc-btn calc-fn" onclick="calcClear()">C</button>
+                <button class="calc-btn calc-fn" onclick="calcInput('(')">(</button>
+                <button class="calc-btn calc-fn" onclick="calcInput(')')">)</button>
+                <button class="calc-btn calc-op" onclick="calcInput('/')">÷</button>
+
+                <button class="calc-btn" onclick="calcInput('7')">7</button>
+                <button class="calc-btn" onclick="calcInput('8')">8</button>
+                <button class="calc-btn" onclick="calcInput('9')">9</button>
+                <button class="calc-btn calc-op" onclick="calcInput('*')">×</button>
+
+                <button class="calc-btn" onclick="calcInput('4')">4</button>
+                <button class="calc-btn" onclick="calcInput('5')">5</button>
+                <button class="calc-btn" onclick="calcInput('6')">6</button>
+                <button class="calc-btn calc-op" onclick="calcInput('-')">−</button>
+
+                <button class="calc-btn" onclick="calcInput('1')">1</button>
+                <button class="calc-btn" onclick="calcInput('2')">2</button>
+                <button class="calc-btn" onclick="calcInput('3')">3</button>
+                <button class="calc-btn calc-op" onclick="calcInput('+')">+</button>
+
+                <button class="calc-btn" onclick="calcInput('0')">0</button>
+                <button class="calc-btn" onclick="calcInput('.')">.</button>
+                <button class="calc-btn calc-fn" onclick="calcBackspace()">⌫</button>
+                <button class="calc-btn calc-eq" onclick="calcEquals()">=</button>
+            </div>
         </div>
     </div>
 
     <!-- Fixed Bottom Bar -->
     <div class="bottom-nav">
         <span>Luyện tập Toán 6 - Số âm & Đa thức</span>
-        <button class="btn btn-secondary" style="padding:0.3rem 0.8rem; font-size:0.85rem;" onclick="toggleScratchpad()">
-            ✏️ Bảng Nháp
-        </button>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn btn-secondary" style="padding:0.3rem 0.8rem; font-size:0.85rem;" onclick="openTool('scratch')">
+                ✏️ Bảng Nháp
+            </button>
+            <button class="btn btn-secondary" style="padding:0.3rem 0.8rem; font-size:0.85rem;" onclick="openTool('calc')">
+                🧮 Máy tính
+            </button>
+        </div>
     </div>
 
     <script>
@@ -907,16 +1023,40 @@
             }
         }
 
-        /* --- Scratchpad Drawer Logic --- */
+        /* --- Scratchpad / Calculator Drawer Logic --- */
         let drawerOpen = false;
         let isFullscreen = false;
+        let currentTool = 'scratch'; // 'scratch' | 'calc'
+
+        function openTool(tool) {
+            const drawer = document.getElementById('scratchDrawer');
+            if (drawerOpen && currentTool === tool) {
+                // Same tool already open → close
+                toggleScratchpad(false);
+                return;
+            }
+            currentTool = tool;
+            // Show/hide panels
+            document.getElementById('scratchContent').style.display = tool === 'scratch' ? 'block' : 'none';
+            document.getElementById('calcPanel').style.display = tool === 'calc' ? 'flex' : 'none';
+            document.getElementById('scratchTools').style.display = tool === 'scratch' ? 'flex' : 'none';
+            document.getElementById('calcTools').style.display = tool === 'calc' ? 'flex' : 'none';
+
+            if (!drawerOpen) {
+                drawerOpen = true;
+                drawer.classList.add('open');
+            }
+            if (tool === 'scratch') {
+                resizeCanvas();
+            }
+        }
 
         function toggleScratchpad(forceState) {
             const drawer = document.getElementById('scratchDrawer');
             drawerOpen = forceState !== undefined ? forceState : !drawerOpen;
             if (drawerOpen) {
                 drawer.classList.add('open');
-                resizeCanvas();
+                if (currentTool === 'scratch') resizeCanvas();
             } else {
                 drawer.classList.remove('open');
             }
@@ -933,7 +1073,9 @@
                 drawer.classList.remove('fullscreen');
                 btn.innerText = '🗖 Toàn màn hình';
             }
-            setTimeout(resizeCanvas, 300);
+            setTimeout(() => {
+                if (currentTool === 'scratch') resizeCanvas();
+            }, 300);
         }
 
         function switchPadMode(mode) {
@@ -943,6 +1085,73 @@
             document.getElementById('scratchCanvas').style.display = mode === 'draw' ? 'block' : 'none';
             document.getElementById('scratchText').style.display = mode === 'text' ? 'block' : 'none';
             document.getElementById('drawControls').style.display = mode === 'draw' ? 'flex' : 'none';
+        }
+
+        /* --- Mini Calculator --- */
+        let calcExpr = '';
+        let calcJustEvaluated = false;
+
+        function updateCalcDisplay() {
+            const el = document.getElementById('calcDisplay');
+            el.innerText = calcExpr || '0';
+        }
+
+        function calcInput(val) {
+            if (calcJustEvaluated) {
+                // After =, start new expression if number/dot/(, else continue with operator
+                if (/[0-9.(]/.test(val)) {
+                    calcExpr = '';
+                }
+                calcJustEvaluated = false;
+            }
+            // Map display symbols
+            if (val === '×') val = '*';
+            if (val === '÷') val = '/';
+            if (val === '−') val = '-';
+            calcExpr += val;
+            updateCalcDisplay();
+        }
+
+        function calcClear() {
+            calcExpr = '';
+            calcJustEvaluated = false;
+            updateCalcDisplay();
+        }
+
+        function calcBackspace() {
+            if (calcJustEvaluated) {
+                calcExpr = '';
+                calcJustEvaluated = false;
+            } else {
+                calcExpr = calcExpr.slice(0, -1);
+            }
+            updateCalcDisplay();
+        }
+
+        function calcEquals() {
+            if (!calcExpr) return;
+            try {
+                // Safe-ish eval: only allow numbers, operators, parentheses, decimal
+                let safe = calcExpr.replace(/[^0-9+\-*/().]/g, '');
+                if (!safe) {
+                    calcExpr = 'Lỗi';
+                    updateCalcDisplay();
+                    return;
+                }
+                // Avoid leading zeros issues etc.
+                let result = Function('"use strict"; return (' + safe + ')')();
+                if (typeof result === 'number' && isFinite(result)) {
+                    // Round to avoid floating point noise
+                    result = Math.round(result * 1e10) / 1e10;
+                    calcExpr = String(result);
+                    calcJustEvaluated = true;
+                } else {
+                    calcExpr = 'Lỗi';
+                }
+            } catch (e) {
+                calcExpr = 'Lỗi';
+            }
+            updateCalcDisplay();
         }
 
         /* --- Canvas Drawing Engine --- */
