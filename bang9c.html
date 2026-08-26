@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Cửu Chương Rút Gọn - Cao Cấp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="py-10 px-4 flex flex-col items-center justify-center">
+
+    <div class="max-w-7xl w-full">
+        <!-- Tiêu đề trang -->
+        <header class="text-center mb-10">
+            <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Học Toán Thông Minh</span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-800 mt-3 mb-2">Bảng Cửu Chương Rút Gọn</h1>
+            <p class="text-slate-600 text-base sm:text-lg">Giao diện rộng rãi, trực quan và không bị trùng lặp phép tính hoán vị.</p>
+        </header>
+        
+        <!-- Lưới hiển thị 4 cột lớn -->
+        <div id="table-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+    </div>
+
+    <script>
+        const container = document.getElementById('table-container');
+        
+        // Nhóm các bảng theo yêu cầu gộp cột
+        const pairs = [
+            [3],
+            [4, 9],
+            [5, 8],
+            [6, 7]
+        ];
+
+        // Màu sắc chủ đạo (Viền trên, màu tiêu đề, màu kết quả) riêng cho từng cột để dễ phân biệt
+        const colStyles = [
+            { border: 'border-blue-500', headerBg: 'bg-blue-600', hoverBg: 'hover:bg-blue-50', textAccent: 'text-blue-600' },
+            { border: 'border-emerald-500', headerBg: 'bg-emerald-600', hoverBg: 'hover:bg-emerald-50', textAccent: 'text-emerald-600' },
+            { border: 'border-amber-500', headerBg: 'bg-amber-600', hoverBg: 'hover:bg-amber-50', textAccent: 'text-amber-600' },
+            { border: 'border-purple-500', headerBg: 'bg-purple-600', hoverBg: 'hover:bg-purple-50', textAccent: 'text-purple-600' }
+        ];
+
+        let html = '';
+
+        pairs.forEach((group, index) => {
+            let style = colStyles[index];
+            html += `
+                <div class="bg-white rounded-2xl shadow-xl border-t-4 ${style.border} p-6 flex flex-col justify-between transform transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                    <div class="space-y-6">
+            `;
+            
+            group.forEach(i => {
+                let start = (i === 3) ? 2 : i; // Bảng 3 bắt đầu từ x2, các bảng khác bắt đầu từ chính nó
+                
+                html += `
+                    <div>
+                        <div class="${style.headerBg} text-white font-bold text-center py-2.5 px-4 rounded-xl mb-3 text-base shadow-sm tracking-wide">
+                            Bảng ${i}
+                        </div>
+                        <div class="space-y-2.5">
+                `;
+
+                for (let j = start; j <= 9; j++) {
+                    html += `
+                        <div class="flex justify-between items-center px-4 py-2.5 bg-slate-50 rounded-xl ${style.hoverBg} transition-colors border border-slate-100">
+                            <span class="font-medium text-slate-700 text-base">${i} × ${j}</span>
+                            <span class="font-bold ${style.textAccent} text-lg">${i * j}</span>
+                        </div>
+                    `;
+                }
+
+                html += `</div></div>`;
+            });
+
+            html += `</div></div>`;
+        });
+
+        container.innerHTML = html;
+    </script>
+
+</body>
+</html>
