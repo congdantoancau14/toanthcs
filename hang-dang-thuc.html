@@ -975,7 +975,7 @@ Vậy a³ − b³ = (a − b)(a² + ab + b²).`,
     function checkAnswer() {
       if (!currentGen) return;
       const user = document.getElementById('userAnswer').value.trim().replace(/\s+/g, '').replace(/\^2/g, '²').replace(/^3/, '³').toLowerCase();
-      const correct = currentGen.answer.replace(/\s+/g, '').replace(/[—–]/g, '-').toLowerCase();
+      const correct = currentGen.answer.replace(/\s+/g, '').replace(/[—–−]/g, '-').toLowerCase();
       const fb = document.getElementById('feedback');
       // Simple flexible check
       if (user === correct || user.includes(correct) || correct.includes(user)) {
