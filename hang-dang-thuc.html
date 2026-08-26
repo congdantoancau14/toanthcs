@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7 Hằng Đẳng Thức Đáng Nhớ | Học Toán Cơ Bản</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #7c3aed;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --bg-hover: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --radius: 16px;
+      --shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(ellipse at 20% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px 30px;
+      position: relative;
+    }
+
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa, #22d3ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .chinese {
+      font-size: 0.95rem;
+      color: #c4b5fd;
+      margin-top: 6px;
+      letter-spacing: 2px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      background: var(--bg-card);
+      padding: 8px;
+      border-radius: 14px;
+      margin-bottom: 28px;
+      border: 1px solid var(--border);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: var(--bg-hover);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards for identities */
+    .identity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .identity-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .identity-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--primary), var(--accent));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .identity-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow);
+    }
+
+    .identity-card:hover::before {
+      opacity: 1;
+    }
+
+    .identity-card .num {
+      display: inline-flex;
+      width: 32px;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+
+    .identity-card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #e2e8f0;
+    }
+
+    .identity-card .formula {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #67e8f9;
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      word-break: break-all;
+    }
+
+    .identity-card .hint {
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 32px;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+      animation: modalIn 0.3s ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: var(--bg-hover);
+      color: var(--text);
+      border-radius: 50%;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+      background: var(--danger);
+    }
+
+    .modal h2 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      padding-right: 40px;
+    }
+
+    .modal .formula-big {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      color: #67e8f9;
+      background: rgba(15, 23, 42, 0.7);
+      padding: 16px;
+      border-radius: 12px;
+      margin: 16px 0;
+      text-align: center;
+      border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 24px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #a5b4fc;
+    }
+
+    .proof, .example {
+      background: rgba(15, 23, 42, 0.5);
+      padding: 16px;
+      border-radius: 12px;
+      border-left: 3px solid var(--primary);
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .example {
+      border-left-color: var(--success);
+    }
+
+    .canvas-wrap {
+      margin: 16px 0;
+      text-align: center;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--border);
+    }
+
+    canvas {
+      max-width: 100%;
+      border-radius: 8px;
+      background: #0f172a;
+    }
+
+    /* Intro tab */
+    .intro-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .intro-section h2 {
+      font-size: 1.35rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .intro-section h3 {
+      font-size: 1.1rem;
+      color: #a5b4fc;
+      margin: 20px 0 10px;
+    }
+
+    .intro-section p, .intro-section li {
+      color: #cbd5e1;
+      margin-bottom: 10px;
+    }
+
+    .intro-section ul {
+      padding-left: 22px;
+      margin-bottom: 12px;
+    }
+
+    .han-box {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(37, 99, 235, 0.15));
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      text-align: center;
+    }
+
+    .han-box .big-han {
+      font-size: 1.8rem;
+      letter-spacing: 6px;
+      color: #c4b5fd;
+      margin-bottom: 6px;
+    }
+
+    .han-box .meaning {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .video-wrap {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 14px;
+      margin: 20px 0;
+      border: 1px solid var(--border);
+    }
+
+    .video-wrap iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Exercises */
+    .exercise-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .exercise-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 12px;
+      color: #67e8f9;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: var(--bg-hover);
+      border-color: var(--primary);
+    }
+
+    .solution {
+      margin-top: 16px;
+      padding: 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      display: none;
+    }
+
+    .solution.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .gen-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    select, input[type="number"] {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      max-width: 400px;
+      margin: 12px 0;
+      padding: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+    }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    .feedback.correct { color: var(--success); }
+    .feedback.wrong { color: var(--danger); }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      .modal { padding: 22px; }
+      .identity-grid { grid-template-columns: 1fr; }
+      .tabs { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>7 Hằng Đẳng Thức Đáng Nhớ</h1>
+      <p>Học từ cơ bản đến thành thạo — Dành cho người mới bắt đầu</p>
+      <div class="chinese">恆等式 · 平方 · 立方</div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab1">📋 Bảng 7 đẳng thức</button>
+      <button class="tab-btn" data-tab="tab2">📖 Giới thiệu</button>
+      <button class="tab-btn" data-tab="tab3">✏️ Bài tập</button>
+    </div>
+
+    <!-- TAB 1: 7 Identities -->
+    <div id="tab1" class="tab-content active">
+      <div class="identity-grid" id="identityGrid"></div>
+    </div>
+
+    <!-- TAB 2: Introduction -->
+    <div id="tab2" class="tab-content">
+      <div class="intro-section">
+        <h2>🌟 Bản chất của Hằng Đẳng Thức</h2>
+        
+        <div class="han-box">
+          <div class="big-han">恆等式</div>
+          <div class="meaning">Hằng Đẳng Thức · héng děng shì</div>
+        </div>
+
+        <p><strong>Đẳng (等)</strong> nghĩa là <em>bằng nhau, ngang nhau</em>. <strong>Thức (式)</strong> nghĩa là <em>biểu thức, công thức</em>.</p>
+        <p>Vậy <strong>đẳng thức</strong> là một câu toán học khẳng định hai biểu thức luôn bằng nhau. <strong>Hằng</strong> (恆) nghĩa là <em>luôn luôn, không đổi</em> → Hằng đẳng thức là đẳng thức luôn đúng với mọi giá trị (trong miền xác định).</p>
+
+        <h3>📐 Bình phương là gì?</h3>
+        <p><strong>Bình phương</strong> (平方 – píng fāng) của một số là số đó nhân với chính nó. Ví dụ: 5² = 5 × 5 = 25. Về hình học, bình phương của cạnh a chính là diện tích hình vuông cạnh a.</p>
+
+        <h3>📦 Lập phương là gì?</h3>
+        <p><strong>Lập phương</strong> (立方 – lì fāng) của một số là số đó nhân với chính nó hai lần. Ví dụ: 3³ = 3 × 3 × 3 = 27. Về hình học, lập phương của cạnh a chính là thể tích khối lập phương cạnh a.</p>
+
+        <h3>💡 Tại sao gọi là “đáng nhớ”?</h3>
+        <p>Vì chúng xuất hiện cực kỳ nhiều khi rút gọn biểu thức, phân tích thành nhân tử, giải phương trình, chứng minh… Học thuộc giúp tính toán nhanh và ít sai sót.</p>
+      </div>
+
+      <div class="intro-section">
+        <h2>🎯 Công dụng & Ứng dụng</h2>
+        <ul>
+          <li><strong>Khai triển</strong> biểu thức: (x + 3)² → x² + 6x + 9</li>
+          <li><strong>Rút gọn</strong> và <strong>phân tích thành nhân tử</strong>: x² − 9 = (x − 3)(x + 3)</li>
+          <li><strong>Giải phương trình</strong> bậc hai, bậc ba</li>
+          <li><strong>Tính nhanh</strong> giá trị số học (ví dụ 101², 99³…)</li>
+          <li>Nền tảng cho các hằng đẳng thức nâng cao hơn (a + b + c)², v.v.</li>
+        </ul>
+      </div>
+
+      <div class="intro-section">
+        <h2>🎬 Video giải thích trực quan</h2>
+        <p>Xem video dưới đây để hiểu sâu hơn (kênh toán phổ thông Việt Nam):</p>
+        <div class="video-wrap">
+          <iframe src="https://www.youtube.com/embed/svZSkXxCnbs" title="Toán lớp 8 - Hằng đẳng thức đáng nhớ - Thầy Lê Ngọc Diên" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-top:8px;">
+          Video: Thầy Lê Ngọc Diên giảng 7 hằng đẳng thức (Phần 1). Bạn cũng có thể tìm thêm “hằng đẳng thức đáng nhớ lớp 8” trên YouTube.
+        </p>
+      </div>
+
+      <div class="intro-section">
+        <h2>🖼️ Minh họa hình học (Bình phương của tổng)</h2>
+        <p>Hình vuông cạnh (a + b) được chia thành: hình vuông a², hình vuông b² và hai hình chữ nhật ab.</p>
+        <div class="canvas-wrap">
+          <canvas id="geoCanvas" width="360" height="280"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Exercises -->
+    <div id="tab3" class="tab-content">
+      <div class="intro-section" style="margin-bottom:24px;">
+        <h2>✏️ Bài tập luyện tập</h2>
+        <p>Chọn loại bài tập và nhấn “Tạo bài mới” để sinh bài ngẫu nhiên. Hoặc xem các bài tập mẫu tĩnh bên dưới.</p>
+        
+        <div class="gen-controls">
+          <select id="exType">
+            <option value="expand2">Khai triển bình phương</option>
+            <option value="expand3">Khai triển lập phương</option>
+            <option value="factor">Phân tích thành nhân tử</option>
+            <option value="compute">Tính giá trị nhanh</option>
+          </select>
+          <button class="btn btn-primary" onclick="generateExercise()">🎲 Tạo bài mới</button>
+        </div>
+
+        <div id="generatedEx" class="exercise-card" style="display:none;">
+          <h3 id="genQuestion"></h3>
+          <input type="text" class="answer-input" id="userAnswer" placeholder="Nhập đáp án của bạn...">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="checkAnswer()">Kiểm tra</button>
+            <button class="btn btn-outline" onclick="showGenSolution()">Xem lời giải</button>
+          </div>
+          <div id="feedback" class="feedback"></div>
+          <div id="genSolution" class="solution"></div>
+        </div>
+      </div>
+
+      <h3 style="margin-bottom:16px;color:#a5b4fc;">📚 Bài tập mẫu (tĩnh)</h3>
+      <div id="staticExercises"></div>
+    </div>
+  </div>
+
+  <footer>
+    Được tạo để hỗ trợ học sinh mất gốc học toán một cách dễ hiểu · 2026
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modalContent"></div>
+  </div>
+
+  <script>
+    // Data for 7 identities
+    const identities = [
+      {
+        id: 1,
+        name: "Bình phương của một tổng",
+        formula: "(a + b)² = a² + 2ab + b²",
+        chinese: "和平方",
+        proof: `Ta có: (a + b)² = (a + b)(a + b)<br>
+= a·a + a·b + b·a + b·b<br>
+= a² + ab + ab + b²<br>
+= a² + 2ab + b².<br><br>
+Vậy (a + b)² = a² + 2ab + b².`,
+        example: {
+          q: "Khai triển (x + 5)²",
+          a: "(x + 5)² = x² + 2·x·5 + 5² = x² + 10x + 25"
+        },
+        memory: "Bình phương số đầu + 2 lần tích + bình phương số cuối"
+      },
+      {
+        id: 2,
+        name: "Bình phương của một hiệu",
+        formula: "(a − b)² = a² − 2ab + b²",
+        chinese: "差平方",
+        proof: `Ta có: (a − b)² = (a − b)(a − b)<br>
+= a·a + a·(−b) + (−b)·a + (−b)·(−b)<br>
+= a² − ab − ab + b²<br>
+= a² − 2ab + b².<br><br>
+Vậy (a − b)² = a² − 2ab + b².`,
+        example: {
+          q: "Khai triển (3x − 4)²",
+          a: "(3x − 4)² = (3x)² − 2·3x·4 + 4² = 9x² − 24x + 16"
+        },
+        memory: "Bình phương số đầu − 2 lần tích + bình phương số cuối (chú ý dấu trừ!)"
+      },
+      {
+        id: 3,
+        name: "Hiệu hai bình phương",
+        formula: "a² − b² = (a − b)(a + b)",
+        chinese: "平方差",
+        proof: `Ta nhân ngược lại: (a − b)(a + b) = a·a + a·b − b·a − b·b<br>
+= a² + ab − ab − b²<br>
+= a² − b².<br><br>
+Vậy a² − b² = (a − b)(a + b).`,
+        example: {
+          q: "Phân tích x² − 16 thành nhân tử",
+          a: "x² − 16 = x² − 4² = (x − 4)(x + 4)"
+        },
+        memory: "Hiệu hai bình phương = (hiệu) × (tổng)"
+      },
+      {
+        id: 4,
+        name: "Lập phương của một tổng",
+        formula: "(a + b)³ = a³ + 3a²b + 3ab² + b³",
+        chinese: "和立方",
+        proof: `Ta có: (a + b)³ = (a + b)(a + b)² = (a + b)(a² + 2ab + b²)<br>
+= a(a² + 2ab + b²) + b(a² + 2ab + b²)<br>
+= a³ + 2a²b + ab² + a²b + 2ab² + b³<br>
+= a³ + 3a²b + 3ab² + b³.<br><br>
+Vậy (a + b)³ = a³ + 3a²b + 3ab² + b³.`,
+        example: {
+          q: "Khai triển (x + 2)³",
+          a: "(x + 2)³ = x³ + 3·x²·2 + 3·x·2² + 2³ = x³ + 6x² + 12x + 8"
+        },
+        memory: "Hệ số: 1 – 3 – 3 – 1 (giống tam giác Pascal)"
+      },
+      {
+        id: 5,
+        name: "Lập phương của một hiệu",
+        formula: "(a − b)³ = a³ − 3a²b + 3ab² − b³",
+        chinese: "差立方",
+        proof: `Tương tự: (a − b)³ = (a − b)(a − b)² = (a − b)(a² − 2ab + b²)<br>
+= a(a² − 2ab + b²) − b(a² − 2ab + b²)<br>
+= a³ − 2a²b + ab² − a²b + 2ab² − b³<br>
+= a³ − 3a²b + 3ab² − b³.<br><br>
+Vậy (a − b)³ = a³ − 3a²b + 3ab² − b³.`,
+        example: {
+          q: "Khai triển (2x − 1)³",
+          a: "(2x − 1)³ = (2x)³ − 3·(2x)²·1 + 3·2x·1² − 1³ = 8x³ − 12x² + 6x − 1"
+        },
+        memory: "Hệ số: 1 – (−3) – 3 – (−1)"
+      },
+      {
+        id: 6,
+        name: "Tổng hai lập phương",
+        formula: "a³ + b³ = (a + b)(a² − ab + b²)",
+        chinese: "立方和",
+        proof: `Nhân: (a + b)(a² − ab + b²) = a·a² + a·(−ab) + a·b² + b·a² + b·(−ab) + b·b²<br>
+= a³ − a²b + ab² + a²b − ab² + b³<br>
+= a³ + b³.<br><br>
+Vậy a³ + b³ = (a + b)(a² − ab + b²).`,
+        example: {
+          q: "Phân tích 8 + 27y³ thành nhân tử",
+          a: "8 + 27y³ = 2³ + (3y)³ = (2 + 3y)(4 − 6y + 9y²)"
+        },
+        memory: "Tổng hai lập phương = (tổng) × (bình phương − tích + bình phương)"
+      },
+      {
+        id: 7,
+        name: "Hiệu hai lập phương",
+        formula: "a³ − b³ = (a − b)(a² + ab + b²)",
+        chinese: "立方差",
+        proof: `Nhân: (a − b)(a² + ab + b²) = a·a² + a·ab + a·b² − b·a² − b·ab − b·b²<br>
+= a³ + a²b + ab² − a²b − ab² − b³<br>
+= a³ − b³.<br><br>
+Vậy a³ − b³ = (a − b)(a² + ab + b²).`,
+        example: {
+          q: "Phân tích 27x³ − 8 thành nhân tử",
+          a: "27x³ − 8 = (3x)³ − 2³ = (3x − 2)(9x² + 6x + 4)"
+        },
+        memory: "Hiệu hai lập phương = (hiệu) × (bình phương + tích + bình phương)"
+      }
+    ];
+
+    // Render identity cards
+    const grid = document.getElementById('identityGrid');
+    identities.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'identity-card';
+      card.innerHTML = `
+        <div class="num">${item.id}</div>
+        <h3>${item.name}</h3>
+        <div class="formula">${item.formula}</div>
+        <div class="hint">👆 Nhấn để xem chứng minh & ví dụ</div>
+      `;
+      card.onclick = () => openModal(item);
+      grid.appendChild(card);
+    });
+
+    // Modal
+    function openModal(item) {
+      const overlay = document.getElementById('modalOverlay');
+      const content = document.getElementById('modalContent');
+      content.innerHTML = `
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <h2>${item.id}. ${item.name}</h2>
+        <div class="formula-big">${item.formula}</div>
+        <p style="color:var(--text-muted);font-size:0.9rem;">Mẹo nhớ: ${item.memory}</p>
+        
+        <div class="section-title">📝 Chứng minh</div>
+        <div class="proof">${item.proof}</div>
+        
+        <div class="section-title">💡 Ví dụ có lời giải</div>
+        <div class="example">
+          <strong>Bài:</strong> ${item.example.q}<br><br>
+          <strong>Giải:</strong> ${item.example.a}
+        </div>
+      `;
+      overlay.classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('show');
+    }
+
+    document.getElementById('modalOverlay').addEventListener('click', e => {
+      if (e.target.id === 'modalOverlay') closeModal();
+    });
+
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+        if (btn.dataset.tab === 'tab2') drawGeometry();
+      });
+    });
+
+    // Geometry canvas
+    function drawGeometry() {
+      const canvas = document.getElementById('geoCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const margin = 40;
+      const size = 200;
+      const a = 120;
+      const b = 80;
+      const x0 = (w - size) / 2;
+      const y0 = 30;
+
+      // Big square (a+b)
+      ctx.strokeStyle = '#60a5fa';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x0, y0, size, size);
+
+      // a²
+      ctx.fillStyle = 'rgba(37, 99, 235, 0.35)';
+      ctx.fillRect(x0, y0, a, a);
+      ctx.strokeStyle = '#3b82f6';
+      ctx.strokeRect(x0, y0, a, a);
+
+      // b²
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.35)';
+      ctx.fillRect(x0 + a, y0 + a, b, b);
+      ctx.strokeStyle = '#06b6d4';
+      ctx.strokeRect(x0 + a, y0 + a, b, b);
+
+      // ab top-right
+      ctx.fillStyle = 'rgba(124, 58, 237, 0.3)';
+      ctx.fillRect(x0 + a, y0, b, a);
+      ctx.strokeStyle = '#8b5cf6';
+      ctx.strokeRect(x0 + a, y0, b, a);
+
+      // ab bottom-left
+      ctx.fillStyle = 'rgba(124, 58, 237, 0.3)';
+      ctx.fillRect(x0, y0 + a, a, b);
+      ctx.strokeStyle = '#8b5cf6';
+      ctx.strokeRect(x0, y0 + a, a, b);
+
+      // Labels
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '14px Be Vietnam Pro';
+      ctx.textAlign = 'center';
+      ctx.fillText('a²', x0 + a/2, y0 + a/2 + 5);
+      ctx.fillText('b²', x0 + a + b/2, y0 + a + b/2 + 5);
+      ctx.fillText('ab', x0 + a + b/2, y0 + a/2 + 5);
+      ctx.fillText('ab', x0 + a/2, y0 + a + b/2 + 5);
+
+      ctx.font = '13px Be Vietnam Pro';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('(a + b)² = a² + 2ab + b²', w/2, h - 15);
+    }
+
+    // Static exercises
+    const staticExs = [
+      {
+        q: "Khai triển (2x + 3)²",
+        sol: "(2x + 3)² = (2x)² + 2·2x·3 + 3² = 4x² + 12x + 9"
+      },
+      {
+        q: "Khai triển (5 − y)²",
+        sol: "(5 − y)² = 5² − 2·5·y + y² = 25 − 10y + y²"
+      },
+      {
+        q: "Phân tích thành nhân tử: 9a² − 16",
+        sol: "9a² − 16 = (3a)² − 4² = (3a − 4)(3a + 4)"
+      },
+      {
+        q: "Khai triển (x + 1)³",
+        sol: "(x + 1)³ = x³ + 3x²·1 + 3x·1² + 1³ = x³ + 3x² + 3x + 1"
+      },
+      {
+        q: "Phân tích: 8x³ − 27",
+        sol: "8x³ − 27 = (2x)³ − 3³ = (2x − 3)(4x² + 6x + 9)"
+      },
+      {
+        q: "Tính nhanh 101² bằng hằng đẳng thức",
+        sol: "101² = (100 + 1)² = 100² + 2·100·1 + 1² = 10000 + 200 + 1 = 10201"
+      }
+    ];
+
+    const staticContainer = document.getElementById('staticExercises');
+    staticExs.forEach((ex, i) => {
+      const div = document.createElement('div');
+      div.className = 'exercise-card';
+      div.innerHTML = `
+        <h3>Bài ${i + 1}: ${ex.q}</h3>
+        <button class="btn btn-outline" onclick="this.nextElementSibling.classList.toggle('show')">Hiện / Ẩn lời giải</button>
+        <div class="solution">${ex.sol}</div>
+      `;
+      staticContainer.appendChild(div);
+    });
+
+    // Random exercise generator
+    let currentGen = null;
+
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateExercise() {
+      const type = document.getElementById('exType').value;
+      const a = randInt(1, 9);
+      const b = randInt(1, 9);
+      const x = ['x', 'y', 'm', 'n'][randInt(0, 3)];
+      let question = '', answer = '', solution = '';
+
+      if (type === 'expand2') {
+        const sign = Math.random() > 0.5 ? '+' : '−';
+        if (sign === '+') {
+          question = `Khai triển (${a}${x} + ${b})²`;
+          answer = `${a*a}${x}² + ${2*a*b}${x} + ${b*b}`;
+          solution = `(${a}${x} + ${b})² = (${a}${x})² + 2·${a}${x}·${b} + ${b}² = ${a*a}${x}² + ${2*a*b}${x} + ${b*b}`;
+        } else {
+          question = `Khai triển (${a}${x} − ${b})²`;
+          answer = `${a*a}${x}² − ${2*a*b}${x} + ${b*b}`;
+          solution = `(${a}${x} − ${b})² = (${a}${x})² − 2·${a}${x}·${b} + ${b}² = ${a*a}${x}² − ${2*a*b}${x} + ${b*b}`;
+        }
+      } else if (type === 'expand3') {
+        const sign = Math.random() > 0.5 ? '+' : '−';
+        if (sign === '+') {
+          question = `Khai triển (${a}${x} + ${b})³`;
+          const t1 = a**3, t2 = 3*a*a*b, t3 = 3*a*b*b, t4 = b**3;
+          answer = `${t1}${x}³ + ${t2}${x}² + ${t3}${x} + ${t4}`;
+          solution = `(${a}${x} + ${b})³ = (${a}${x})³ + 3(${a}${x})²(${b}) + 3(${a}${x})(${b})² + ${b}³ = ${t1}${x}³ + ${t2}${x}² + ${t3}${x} + ${t4}`;
+        } else {
+          question = `Khai triển (${a}${x} − ${b})³`;
+          const t1 = a**3, t2 = 3*a*a*b, t3 = 3*a*b*b, t4 = b**3;
+          answer = `${t1}${x}³ − ${t2}${x}² + ${t3}${x} − ${t4}`;
+          solution = `(${a}${x} − ${b})³ = (${a}${x})³ − 3(${a}${x})²(${b}) + 3(${a}${x})(${b})² − ${b}³ = ${t1}${x}³ − ${t2}${x}² + ${t3}${x} − ${t4}`;
+        }
+      } else if (type === 'factor') {
+        const choice = randInt(0, 2);
+        if (choice === 0) {
+          question = `Phân tích thành nhân tử: ${a*a}${x}² − ${b*b}`;
+          answer = `(${a}${x} − ${b})(${a}${x} + ${b})`;
+          solution = `${a*a}${x}² − ${b*b} = (${a}${x})² − ${b}² = (${a}${x} − ${b})(${a}${x} + ${b})`;
+        } else if (choice === 1) {
+          question = `Phân tích: ${a**3}${x}³ − ${b**3}`;
+          answer = `(${a}${x} − ${b})(${a*a}${x}² + ${a*b}${x} + ${b*b})`;
+          solution = `${a**3}${x}³ − ${b**3} = (${a}${x})³ − ${b}³ = (${a}${x} − ${b})([${a}${x}]² + ${a}${x}·${b} + ${b}²) = (${a}${x} − ${b})(${a*a}${x}² + ${a*b}${x} + ${b*b})`;
+        } else {
+          question = `Phân tích: ${a**3} + ${b**3}${x}³`;
+          answer = `(${a} + ${b}${x})(${a*a} − ${a*b}${x} + ${b*b}${x}²)`;
+          solution = `${a**3} + ${b**3}${x}³ = ${a}³ + (${b}${x})³ = (${a} + ${b}${x})(${a}² − ${a}·${b}${x} + (${b}${x})²) = (${a} + ${b}${x})(${a*a} − ${a*b}${x} + ${b*b}${x}²)`;
+        }
+      } else { // compute
+        const n = randInt(10, 50);
+        const d = randInt(1, 5);
+        question = `Tính nhanh ${n + d}² bằng hằng đẳng thức`;
+        answer = String((n + d) ** 2);
+        solution = `${n + d}² = (${n} + ${d})² = ${n}² + 2·${n}·${d} + ${d}² = ${n*n} + ${2*n*d} + ${d*d} = ${(n+d)**2}`;
+      }
+
+      currentGen = { answer, solution };
+      document.getElementById('genQuestion').textContent = question;
+      document.getElementById('userAnswer').value = '';
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('genSolution').classList.remove('show');
+      document.getElementById('genSolution').innerHTML = solution;
+      document.getElementById('generatedEx').style.display = 'block';
+    }
+
+    function checkAnswer() {
+      if (!currentGen) return;
+      const user = document.getElementById('userAnswer').value.trim().replace(/\s+/g, '').toLowerCase();
+      const correct = currentGen.answer.replace(/\s+/g, '').toLowerCase();
+      const fb = document.getElementById('feedback');
+      // Simple flexible check
+      if (user === correct || user.includes(correct) || correct.includes(user)) {
+        fb.textContent = '✅ Chính xác! Giỏi lắm!';
+        fb.className = 'feedback correct';
+      } else {
+        fb.textContent = '❌ Chưa đúng. Hãy thử lại hoặc xem lời giải.';
+        fb.className = 'feedback wrong';
+      }
+    }
+
+    function showGenSolution() {
+      document.getElementById('genSolution').classList.add('show');
+    }
+
+    // Init geometry if needed
+    window.addEventListener('load', () => {
+      // Pre-draw if tab2 somehow active
+    });
+  </script>
+</body>
+</html>
