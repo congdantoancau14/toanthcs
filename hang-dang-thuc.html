@@ -955,8 +955,8 @@ Vậy a³ − b³ = (a − b)(a² + ab + b²).`,
           solution = `${a**3} + ${b**3}${x}³ = ${a}³ + (${b}${x})³ = (${a} + ${b}${x})(${a}² − ${a}·${b}${x} + (${b}${x})²) = (${a} + ${b}${x})(${a*a} − ${a*b}${x} + ${b*b}${x}²)`;
         }
       } else { // compute
-        const n = randInt(10, 50);
-        const d = randInt(1, 5);
+        const n = randInt(1, 9) * 10;
+        const d = randInt(1, 9);
         question = `Tính nhanh ${n + d}² bằng hằng đẳng thức`;
         answer = String((n + d) ** 2);
         solution = `${n + d}² = (${n} + ${d})² = ${n}² + 2·${n}·${d} + ${d}² = ${n*n} + ${2*n*d} + ${d*d} = ${(n+d)**2}`;
