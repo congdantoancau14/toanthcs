@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luyện Tập Đại Số Lớp 6 - Số Âm & Đa Thức</title>
+    <title>Luyện Tập Đại Số - Số Âm, Đa Thức & Nhân Chia Đa Thức</title>
     <style>
         :root {
             --bg-color: #f4f6f9;
@@ -533,8 +533,8 @@
 <body>
 
     <header>
-        <h1>Luyện Tập Đại Số Lớp 6</h1>
-        <p>Cộng trừ số âm, đơn thức & đa thức đồng dạng</p>
+        <h1>Luyện Tập Đại Số Lớp 6 & 7</h1>
+        <p>Cộng trừ số âm, đơn thức, đa thức & Nhân chia đa thức</p>
     </header>
 
     <div class="container">
@@ -547,6 +547,7 @@
                         <option value="signed">1. Phép tính Số Nguyên (Số âm)</option>
                         <option value="monomial">2. Cộng trừ Đơn thức đồng dạng</option>
                         <option value="polynomial">3. Cộng trừ Đa thức đơn giản</option>
+                        <option value="mul_div_poly">4. Nhân & Chia Đa thức</option>
                     </select>
                 </div>
                 <div>
@@ -591,9 +592,9 @@
                 <button type="button" class="key-btn key-var" onclick="appendToAnswer('y')">y</button>
                 <button type="button" class="key-btn key-op" onclick="appendToAnswer('+')">+</button>
                 <button type="button" class="key-btn key-op" onclick="appendToAnswer('-')">−</button>
+                <button type="button" class="key-btn key-op" onclick="appendToAnswer('^')">^</button>
                 <button type="button" class="key-btn key-op" onclick="appendToAnswer('(')">(</button>
                 <button type="button" class="key-btn key-op" onclick="appendToAnswer(')')">)</button>
-                <button type="button" class="key-btn key-op" onclick="appendToAnswer('/')">/</button>
                 <button type="button" class="key-btn key-del" onclick="deleteLastChar()">⌫ Xóa</button>
             </div>
 
@@ -601,8 +602,8 @@
 
             <div class="guide-box">
                 💡 <strong>Mẹo nhập đáp án:</strong><br>
-                - Với đơn thức: Nhập ví dụ <code>-5x</code> hoặc <code>3x^2</code>.<br>
-                - Với đa thức: Viết liền không cách hoặc viết rõ dạng thu gọn. Ví dụ: <code>2x-3y</code>.
+                - Với số mũ: Sử dụng ký hiệu <code>^</code> (Ví dụ: <code>2x^2</code> hoặc <code>-3x^3</code>).<br>
+                - Với đa thức: Viết dạng thu gọn sắp xếp giảm dần bậc theo <code>x</code>. Ví dụ: <code>2x^2-3x+5</code>.
             </div>
         </div>
 
@@ -699,7 +700,7 @@
 
     <!-- Fixed Bottom Bar -->
     <div class="bottom-nav">
-        <span>Luyện tập Toán 6 - Số âm & Đa thức</span>
+        <span>Luyện tập Toán Đại Số</span>
         <div style="display:flex; gap:0.5rem;">
             <button class="btn btn-secondary" style="padding:0.3rem 0.8rem; font-size:0.85rem;" onclick="openTool('scratch')">
                 ✏️ Bảng Nháp
@@ -734,6 +735,39 @@
             return num < 0 ? `(${num})` : `${num}`;
         }
 
+        // Helper: Định dạng đơn thức ax^p
+        function formatMonomialTerm(coeff, exp, varName = 'x', isFirst = false) {
+            if (coeff === 0) return "";
+            let sign = coeff > 0 ? (isFirst ? "" : " + ") : (isFirst ? "-" : " - ");
+            let absC = Math.abs(coeff);
+            let coeffStr = "";
+
+            if (exp === 0) {
+                coeffStr = `${absC}`;
+            } else {
+                coeffStr = absC === 1 ? "" : `${absC}`;
+            }
+
+            let varStr = "";
+            if (exp === 1) varStr = varName;
+            else if (exp > 1) varStr = `${varName}^${exp}`;
+
+            return sign + coeffStr + varStr;
+        }
+
+        // Helper: In đa thức chuẩn thu gọn từ mảng hệ số (chỉ số mảng = số mũ)
+        function formatPolyFromCoeffs(coeffs, varName = 'x') {
+            let res = "";
+            let isFirst = true;
+            for (let i = coeffs.length - 1; i >= 0; i--) {
+                if (coeffs[i] !== 0) {
+                    res += formatMonomialTerm(coeffs[i], i, varName, isFirst);
+                    isFirst = false;
+                }
+            }
+            return res === "" ? "0" : res.replace(/\s+/g, '');
+        }
+
         function generateQuestionData(topic, diff) {
             let qText = "";
             let answer = "";
@@ -749,12 +783,10 @@
                     qText = `${formatSigned(a)} ${op} ${formatSigned(b)}`;
                     answer = op === '+' ? (a + b).toString() : (a - b).toString();
                 } else if (diff === 'medium') {
-                    // e.g. a - (-b) + c
                     qText = `${formatSigned(a)} - (${b < 0 ? b : -b}) + ${formatSigned(c)}`;
                     let realB = b < 0 ? b : -b;
                     answer = (a - realB + c).toString();
                 } else {
-                    // Hard: Absolute values or multiple operations
                     qText = `${formatSigned(a)} . ${formatSigned(b)} - ${formatSigned(c)}`;
                     answer = (a * b - c).toString();
                 }
@@ -776,14 +808,10 @@
                     let resCoeff = coeff1 - coeff2 + coeff3;
                     answer = resCoeff === 0 ? "0" : (resCoeff === 1 ? v : (resCoeff === -1 ? `-${v}` : `${resCoeff}${v}`));
                 } else {
-                    // Hard: Two variables (x, y) — random order, random number of each, random signs
-                    // Generate 3 terms, each is either x or y (at least one of each)
                     let terms = [];
                     let coeffX = 0, coeffY = 0;
-                    // Ensure variety: decide how many x vs y (1 or 2 of one, rest the other)
                     let numX = Math.random() < 0.5 ? 1 : 2;
                     let numY = 3 - numX;
-                    // Create coefficients
                     for (let i = 0; i < numX; i++) {
                         let c = getRandomInt(-10, 10);
                         coeffX += c;
@@ -794,12 +822,10 @@
                         coeffY += c;
                         terms.push({ coeff: c, v: 'y' });
                     }
-                    // Shuffle terms for random order
                     for (let i = terms.length - 1; i > 0; i--) {
                         let j = Math.floor(Math.random() * (i + 1));
                         [terms[i], terms[j]] = [terms[j], terms[i]];
                     }
-                    // Build question string
                     qText = terms.map((t, idx) => {
                         let sign = t.coeff >= 0 ? (idx === 0 ? '' : ' + ') : ' - ';
                         let absC = Math.abs(t.coeff);
@@ -807,7 +833,6 @@
                         if (idx === 0 && t.coeff < 0) return `-${body}`;
                         return sign + body;
                     }).join('').replace(/^ \+ /, '').trim();
-                    // Build answer (always x then y for consistent checking)
                     let termX = coeffX === 0 ? "" : (coeffX === 1 ? "x" : (coeffX === -1 ? "-x" : `${coeffX}x`));
                     let termY = coeffY === 0 ? "" : (coeffY === 1 ? "y" : (coeffY === -1 ? "-y" : `${coeffY}y`));
                     if (termX && termY) {
@@ -824,29 +849,24 @@
                 let a1 = getRandomInt(-5, 5), b1 = getRandomInt(-5, 5);
                 let a2 = getRandomInt(-5, 5), b2 = getRandomInt(-5, 5);
 
-                // Helper: format one binomial with random term order (x first or constant first)
                 function formatBinomial(a, b) {
                     let xPart = a === 0 ? "" : (a === 1 ? "x" : (a === -1 ? "-x" : `${a}x`));
                     let cPart = b === 0 ? "" : `${b}`;
                     if (!xPart && !cPart) return "0";
                     if (!xPart) return cPart;
                     if (!cPart) return xPart;
-                    // Random: x first or constant first
                     if (Math.random() < 0.5) {
-                        // constant first
                         let sign = a >= 0 ? " + " : " - ";
                         let absA = Math.abs(a);
                         let body = absA === 1 ? "x" : `${absA}x`;
                         return `${b}${sign}${body}`;
                     } else {
-                        // x first
                         let sign = b >= 0 ? " + " : " - ";
                         return `${xPart}${sign}${Math.abs(b)}`;
                     }
                 }
 
                 if (diff === 'easy') {
-                    // ( ... ) + ( ... )
                     qText = `(${formatBinomial(a1, b1)}) + (${formatBinomial(a2, b2)})`;
                     let resA = a1 + a2;
                     let resB = b1 + b2;
@@ -855,7 +875,6 @@
                     answer = (partA + partB).replace(/^\+/, "");
                     if (answer === "") answer = "0";
                 } else {
-                    // ( ... ) - ( ... )
                     qText = `(${formatBinomial(a1, b1)}) - (${formatBinomial(a2, b2)})`;
                     let resA = a1 - a2;
                     let resB = b1 - b2;
@@ -863,6 +882,87 @@
                     let partB = resB === 0 ? "" : (resB > 0 ? `+${resB}` : `${resB}`);
                     answer = (partA + partB).replace(/^\+/, "");
                     if (answer === "") answer = "0";
+                }
+            }
+            else if (topic === 'mul_div_poly') {
+                // Nhân & Chia Đa thức
+                if (diff === 'easy') {
+                    // Dễ: Nhân đơn thức với đa thức bậc 1 hoặc 2
+                    let c = getRandomInt(-5, 5);
+                    let eC = getRandomInt(1, 2);
+                    let a1 = getRandomInt(-4, 4);
+                    let b1 = getRandomInt(-5, 5);
+                    
+                    let monoStr = formatMonomialTerm(c, eC, 'x', true).replace(/\s+/g, '');
+                    let polyStr = formatPolyFromCoeffs([b1, a1]); // a1*x + b1
+                    
+                    qText = `${monoStr} . (${polyStr})`;
+                    
+                    // (c*x^eC) * (a1*x + b1) = (c*a1)x^(eC+1) + (c*b1)x^eC
+                    let resCoeffs = [];
+                    resCoeffs[eC + 1] = c * a1;
+                    resCoeffs[eC] = c * b1;
+                    for(let i=0; i<eC; i++) resCoeffs[i] = 0;
+                    
+                    answer = formatPolyFromCoeffs(resCoeffs);
+                }
+                else if (diff === 'medium') {
+                    // Trung bình: Nhân đa thức bậc 1 với đa thức bậc 1, HOẶC Chia đa thức cho đơn thức
+                    let isDiv = Math.random() < 0.4;
+                    if (!isDiv) {
+                        // (ax + b)(cx + d)
+                        let a = getRandomInt(-4, 4);
+                        let b = getRandomInt(-5, 5);
+                        let c = getRandomInt(-4, 4);
+                        let d = getRandomInt(-5, 5);
+                        
+                        let p1 = formatPolyFromCoeffs([b, a]);
+                        let p2 = formatPolyFromCoeffs([d, c]);
+                        qText = `(${p1}) . (${p2})`;
+                        
+                        // res = a*c x^2 + (a*d + b*c) x + b*d
+                        let resCoeffs = [b * d, a * d + b * c, a * c];
+                        answer = formatPolyFromCoeffs(resCoeffs);
+                    } else {
+                        // Chia: (ax^3 + bx^2 + cx) : (dx)
+                        let d = getRandomInt(-3, 3);
+                        let q2 = getRandomInt(-3, 3);
+                        let q1 = getRandomInt(-4, 4);
+                        let q0 = getRandomInt(-5, 5);
+                        
+                        // Đa thức bị chia = (dx) * (q2 x^2 + q1 x + q0)
+                        let a = d * q2;
+                        let b = d * q1;
+                        let c = d * q0;
+                        
+                        let dividend = formatPolyFromCoeffs([0, c, b, a]);
+                        let divisor = formatMonomialTerm(d, 1, 'x', true).replace(/\s+/g, '');
+                        
+                        qText = `(${dividend}) : (${divisor})`;
+                        answer = formatPolyFromCoeffs([q0, q1, q2]);
+                    }
+                }
+                else {
+                    // Khó: (ax + b)(cx^2 + dx + e) HOẶC Rút gọn biểu thức nhân kết hợp cộng trừ
+                    let a = getRandomInt(-3, 3);
+                    let b = getRandomInt(-4, 4);
+                    let c = getRandomInt(-3, 3);
+                    let d = getRandomInt(-4, 4);
+                    let e = getRandomInt(-5, 5);
+                    
+                    let p1 = formatPolyFromCoeffs([b, a]);
+                    let p2 = formatPolyFromCoeffs([e, d, c]);
+                    
+                    qText = `(${p1}) . (${p2})`;
+                    
+                    // res = a*c x^3 + (a*d + b*c) x^2 + (a*e + b*d) x + b*e
+                    let resCoeffs = [
+                        b * e,
+                        a * e + b * d,
+                        a * d + b * c,
+                        a * c
+                    ];
+                    answer = formatPolyFromCoeffs(resCoeffs);
                 }
             }
 
@@ -891,7 +991,6 @@
 
         function appendToAnswer(char) {
             const input = document.getElementById('answerInput');
-            // Convert fancy minus to normal minus
             if (char === '−') char = '-';
             input.value += char;
             input.focus();
@@ -975,7 +1074,6 @@
         /* --- LocalStorage Sync --- */
         function saveState() {
             state.textNotes = document.getElementById('scratchText').value;
-            // Save Canvas image state
             const canvas = document.getElementById('scratchCanvas');
             const canvasData = canvas.toDataURL();
 
@@ -1026,17 +1124,15 @@
         /* --- Scratchpad / Calculator Drawer Logic --- */
         let drawerOpen = false;
         let isFullscreen = false;
-        let currentTool = 'scratch'; // 'scratch' | 'calc'
+        let currentTool = 'scratch';
 
         function openTool(tool) {
             const drawer = document.getElementById('scratchDrawer');
             if (drawerOpen && currentTool === tool) {
-                // Same tool already open → close
                 toggleScratchpad(false);
                 return;
             }
             currentTool = tool;
-            // Show/hide panels
             document.getElementById('scratchContent').style.display = tool === 'scratch' ? 'block' : 'none';
             document.getElementById('calcPanel').style.display = tool === 'calc' ? 'flex' : 'none';
             document.getElementById('scratchTools').style.display = tool === 'scratch' ? 'flex' : 'none';
@@ -1098,13 +1194,11 @@
 
         function calcInput(val) {
             if (calcJustEvaluated) {
-                // After =, start new expression if number/dot/(, else continue with operator
                 if (/[0-9.(]/.test(val)) {
                     calcExpr = '';
                 }
                 calcJustEvaluated = false;
             }
-            // Map display symbols
             if (val === '×') val = '*';
             if (val === '÷') val = '/';
             if (val === '−') val = '-';
@@ -1131,17 +1225,14 @@
         function calcEquals() {
             if (!calcExpr) return;
             try {
-                // Safe-ish eval: only allow numbers, operators, parentheses, decimal
                 let safe = calcExpr.replace(/[^0-9+\-*/().]/g, '');
                 if (!safe) {
                     calcExpr = 'Lỗi';
                     updateCalcDisplay();
                     return;
                 }
-                // Avoid leading zeros issues etc.
                 let result = Function('"use strict"; return (' + safe + ')')();
                 if (typeof result === 'number' && isFinite(result)) {
-                    // Round to avoid floating point noise
                     result = Math.round(result * 1e10) / 1e10;
                     calcExpr = String(result);
                     calcJustEvaluated = true;
@@ -1162,7 +1253,6 @@
 
         function resizeCanvas() {
             const rect = canvas.parentElement.getBoundingClientRect();
-            // Save old content
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = canvas.width;
             tempCanvas.height = canvas.height;
@@ -1172,7 +1262,6 @@
             canvas.width = rect.width;
             canvas.height = rect.height;
 
-            // Restore content
             ctx.drawImage(tempCanvas, 0, 0);
             ctx.strokeStyle = strokeColor;
             ctx.lineWidth = 2.5;
@@ -1191,7 +1280,6 @@
             saveState();
         }
 
-        // Mouse & Touch events
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
