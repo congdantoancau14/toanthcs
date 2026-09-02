@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
+      /* Dark Theme (Default) */
       --primary: #2563eb;
       --primary-dark: #1d4ed8;
       --secondary: #7c3aed;
@@ -24,6 +25,36 @@
       --border: #334155;
       --radius: 16px;
       --shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+      --formula-bg: rgba(15, 23, 42, 0.6);
+      --formula-text: #67e8f9;
+      --formula-border: rgba(6, 182, 212, 0.2);
+      --label-bg: #3b82f6;
+      --label-text: #ffffff;
+      --canvas-bg: #0f172a;
+    }
+
+    [data-theme="light"] {
+      /* Light Theme */
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #6d28d9;
+      --accent: #0891b2;
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-hover: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 10px 25px -5px rgba(0,0,0,0.08);
+      --formula-bg: #f1f5f9;
+      --formula-text: #0284c7;
+      --formula-border: #cbd5e1;
+      --label-bg: #2563eb;
+      --label-text: #ffffff;
+      --canvas-bg: #f8fafc;
     }
 
     * {
@@ -38,10 +69,10 @@
       color: var(--text);
       min-height: 100vh;
       line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
       background-image: 
-        radial-gradient(ellipse at 20% 20%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.12) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
+        radial-gradient(ellipse at 20% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
     }
 
     .container {
@@ -56,10 +87,35 @@
       position: relative;
     }
 
+    /* Theme Switcher Button */
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow);
+      transition: all 0.25s ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--bg-hover);
+    }
+
     header h1 {
       font-size: clamp(1.8rem, 5vw, 2.8rem);
       font-weight: 700;
-      background: linear-gradient(135deg, #60a5fa, #a78bfa, #22d3ee);
+      background: linear-gradient(135deg, #2563eb, #7c3aed, #06b6d4);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -73,9 +129,10 @@
 
     .chinese {
       font-size: 0.95rem;
-      color: #c4b5fd;
+      color: var(--secondary);
       margin-top: 6px;
       letter-spacing: 2px;
+      font-weight: 500;
     }
 
     /* Tabs */
@@ -89,6 +146,7 @@
       border: 1px solid var(--border);
       flex-wrap: wrap;
       justify-content: center;
+      box-shadow: var(--shadow);
     }
 
     .tab-btn {
@@ -118,7 +176,7 @@
     .tab-btn.active {
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
-      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
     }
 
     .tab-content {
@@ -135,88 +193,124 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Cards for identities */
-    .identity-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 18px;
+    /* =========================================================
+       NEW LIST DESIGN FOR TAB 1 (HẰNG ĐẲNG THỨC)
+    ========================================================= */
+    .identity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      margin-top: 10px;
     }
 
-    .identity-card {
+    .identity-item-wrapper {
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.25s ease;
+    }
+
+    .identity-item-wrapper:hover {
+      transform: translateY(-3px);
+    }
+
+    /* Label thiết kế nằm trên, vát chéo chìm vào khối */
+    .identity-label {
+      position: absolute;
+      top: -16px;
+      left: 24px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--label-text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 4px 24px 4px 14px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 4px;
+      z-index: 2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      /* Đuôi vát chéo */
+      clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Khối hình chữ nhật dài (Pill-like bar) */
+    .identity-pill {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 22px;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      border-radius: 16px;
+      padding: 16px 24px 16px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
       position: relative;
-      overflow: hidden;
-    }
-
-    .identity-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background: linear-gradient(to bottom, var(--primary), var(--accent));
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .identity-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--primary);
       box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
-    .identity-card:hover::before {
-      opacity: 1;
+    .identity-item-wrapper:hover .identity-pill {
+      border-color: var(--primary);
+      box-shadow: 0 8px 25px -5px rgba(37, 99, 235, 0.2);
     }
 
-    .identity-card .num {
-      display: inline-flex;
-      width: 32px;
-      height: 32px;
+    .identity-pill-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+    }
+
+    /* Số thứ tự Inline ở đầu */
+    .identity-num {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-radius: 50%;
+      display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 8px;
       font-weight: 700;
-      font-size: 0.9rem;
-      margin-bottom: 12px;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
     }
 
-    .identity-card h3 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: #e2e8f0;
-    }
-
-    .identity-card .formula {
+    /* Nội dung HDT (Thân/Đuôi) */
+    .identity-formula {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1.05rem;
-      background: rgba(15, 23, 42, 0.6);
-      padding: 12px 14px;
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--formula-text);
+      background: var(--formula-bg);
+      padding: 10px 18px;
       border-radius: 10px;
-      color: #67e8f9;
-      border: 1px solid rgba(6, 182, 212, 0.2);
+      border: 1px solid var(--formula-border);
+      flex: 1;
       word-break: break-all;
     }
 
-    .identity-card .hint {
-      margin-top: 12px;
-      font-size: 0.85rem;
+    .identity-action {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       color: var(--text-muted);
+      font-size: 0.85rem;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .identity-item-wrapper:hover .identity-action {
+      color: var(--primary);
     }
 
     /* Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(8px);
       display: none;
       align-items: center;
@@ -240,7 +334,7 @@
       overflow-y: auto;
       padding: 32px;
       position: relative;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
       animation: modalIn 0.3s ease;
     }
 
@@ -269,6 +363,7 @@
 
     .modal-close:hover {
       background: var(--danger);
+      color: white;
     }
 
     .modal h2 {
@@ -280,13 +375,13 @@
     .modal .formula-big {
       font-family: 'JetBrains Mono', monospace;
       font-size: 1.25rem;
-      color: #67e8f9;
-      background: rgba(15, 23, 42, 0.7);
+      color: var(--formula-text);
+      background: var(--formula-bg);
       padding: 16px;
       border-radius: 12px;
       margin: 16px 0;
       text-align: center;
-      border: 1px solid rgba(6, 182, 212, 0.3);
+      border: 1px solid var(--formula-border);
     }
 
     .section-title {
@@ -296,14 +391,14 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      color: #a5b4fc;
+      color: var(--secondary);
     }
 
     .proof, .example {
-      background: rgba(15, 23, 42, 0.5);
+      background: var(--formula-bg);
       padding: 16px;
       border-radius: 12px;
-      border-left: 3px solid var(--primary);
+      border-left: 4px solid var(--primary);
       margin-bottom: 12px;
       font-size: 0.95rem;
     }
@@ -315,7 +410,7 @@
     .canvas-wrap {
       margin: 16px 0;
       text-align: center;
-      background: rgba(15, 23, 42, 0.6);
+      background: var(--formula-bg);
       border-radius: 12px;
       padding: 16px;
       border: 1px solid var(--border);
@@ -324,7 +419,7 @@
     canvas {
       max-width: 100%;
       border-radius: 8px;
-      background: #0f172a;
+      background: var(--canvas-bg);
     }
 
     /* Intro tab */
@@ -334,6 +429,7 @@
       border-radius: var(--radius);
       padding: 28px;
       margin-bottom: 20px;
+      box-shadow: var(--shadow);
     }
 
     .intro-section h2 {
@@ -346,13 +442,14 @@
 
     .intro-section h3 {
       font-size: 1.1rem;
-      color: #a5b4fc;
+      color: var(--secondary);
       margin: 20px 0 10px;
     }
 
     .intro-section p, .intro-section li {
-      color: #cbd5e1;
+      color: var(--text);
       margin-bottom: 10px;
+      opacity: 0.9;
     }
 
     .intro-section ul {
@@ -361,7 +458,7 @@
     }
 
     .han-box {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(37, 99, 235, 0.15));
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(37, 99, 235, 0.1));
       border: 1px solid rgba(167, 139, 250, 0.3);
       border-radius: 12px;
       padding: 16px 20px;
@@ -372,8 +469,9 @@
     .han-box .big-han {
       font-size: 1.8rem;
       letter-spacing: 6px;
-      color: #c4b5fd;
+      color: var(--secondary);
       margin-bottom: 6px;
+      font-weight: 700;
     }
 
     .han-box .meaning {
@@ -407,12 +505,13 @@
       border-radius: var(--radius);
       padding: 24px;
       margin-bottom: 18px;
+      box-shadow: var(--shadow);
     }
 
     .exercise-card h3 {
       font-size: 1.15rem;
       margin-bottom: 12px;
-      color: #67e8f9;
+      color: var(--accent);
     }
 
     .btn {
@@ -436,7 +535,7 @@
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
     }
 
     .btn-outline {
@@ -472,7 +571,7 @@
       align-items: center;
     }
 
-    select, input[type="number"] {
+    select, input[type="text"] {
       background: var(--bg);
       border: 1px solid var(--border);
       color: var(--text);
@@ -510,16 +609,40 @@
       font-size: 0.9rem;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
       .modal { padding: 22px; }
-      .identity-grid { grid-template-columns: 1fr; }
       .tabs { flex-direction: column; }
+      .identity-pill {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-top: 24px;
+      }
+      .identity-pill-left {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .identity-formula {
+        width: 100%;
+      }
+      .identity-action {
+        align-self: flex-end;
+      }
+      .theme-toggle {
+        position: relative;
+        top: 0;
+        right: 0;
+        margin: 0 auto 15px auto;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
+      <button class="theme-toggle" id="themeToggleBtn">
+        <span id="themeIcon">☀️</span> <span id="themeText">Giao diện sáng</span>
+      </button>
       <h1>7 Hằng Đẳng Thức Đáng Nhớ</h1>
       <p>Học từ cơ bản đến thành thạo — Dành cho người mới bắt đầu</p>
       <div class="chinese">恆等式 · 平方 · 立方</div>
@@ -531,12 +654,10 @@
       <button class="tab-btn" data-tab="tab3">✏️ Bài tập</button>
     </div>
 
-    <!-- TAB 1: 7 Identities -->
     <div id="tab1" class="tab-content active">
-      <div class="identity-grid" id="identityGrid"></div>
+      <div class="identity-list" id="identityList"></div>
     </div>
 
-    <!-- TAB 2: Introduction -->
     <div id="tab2" class="tab-content">
       <div class="intro-section">
         <h2>🌟 Bản chất của Hằng Đẳng Thức</h2>
@@ -590,7 +711,6 @@
       </div>
     </div>
 
-    <!-- TAB 3: Exercises -->
     <div id="tab3" class="tab-content">
       <div class="intro-section" style="margin-bottom:24px;">
         <h2>✏️ Bài tập luyện tập</h2>
@@ -618,7 +738,7 @@
         </div>
       </div>
 
-      <h3 style="margin-bottom:16px;color:#a5b4fc;">📚 Bài tập mẫu (tĩnh)</h3>
+      <h3 style="margin-bottom:16px;color:var(--secondary);">📚 Bài tập mẫu (tĩnh)</h3>
       <div id="staticExercises"></div>
     </div>
   </div>
@@ -627,12 +747,32 @@
     Được tạo để hỗ trợ học sinh mất gốc học toán một cách dễ hiểu · 2026
   </footer>
 
-  <!-- Modal -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal" id="modalContent"></div>
   </div>
 
   <script>
+    // Theme Switcher Logic
+    const themeBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+
+    themeBtn.addEventListener('click', () => {
+      const currentTheme = document.body.getAttribute('data-theme');
+      if (currentTheme === 'light') {
+        document.body.removeAttribute('data-theme');
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Giao diện sáng';
+      } else {
+        document.body.setAttribute('data-theme', 'light');
+        themeIcon.textContent = '🌙';
+        themeText.textContent = 'Giao diện tối';
+      }
+      if (document.getElementById('tab2').classList.contains('active')) {
+        drawGeometry();
+      }
+    });
+
     // Data for 7 identities
     const identities = [
       {
@@ -746,19 +886,27 @@ Vậy a³ − b³ = (a − b)(a² + ab + b²).`,
       }
     ];
 
-    // Render identity cards
-    const grid = document.getElementById('identityGrid');
+    // Render list for 7 identities (New List Decor)
+    const listContainer = document.getElementById('identityList');
     identities.forEach(item => {
-      const card = document.createElement('div');
-      card.className = 'identity-card';
-      card.innerHTML = `
-        <div class="num">${item.id}</div>
-        <h3>${item.name}</h3>
-        <div class="formula">${item.formula}</div>
-        <div class="hint">👆 Nhấn để xem chứng minh & ví dụ</div>
+      const wrapper = document.createElement('div');
+      wrapper.className = 'identity-item-wrapper';
+      wrapper.innerHTML = `
+        <div class="identity-label">
+          <span>${item.name}</span>
+        </div>
+        <div class="identity-pill">
+          <div class="identity-pill-left">
+            <div class="identity-num">${item.id}</div>
+            <div class="identity-formula">${item.formula}</div>
+          </div>
+          <div class="identity-action">
+            <span>Chi tiết</span> ➔
+          </div>
+        </div>
       `;
-      card.onclick = () => openModal(item);
-      grid.appendChild(card);
+      wrapper.onclick = () => openModal(item);
+      listContainer.appendChild(wrapper);
     });
 
     // Modal
@@ -818,37 +966,39 @@ Vậy a³ − b³ = (a − b)(a² + ab + b²).`,
       const x0 = (w - size) / 2;
       const y0 = 30;
 
+      const isLight = document.body.getAttribute('data-theme') === 'light';
+
       // Big square (a+b)
-      ctx.strokeStyle = '#60a5fa';
+      ctx.strokeStyle = isLight ? '#2563eb' : '#60a5fa';
       ctx.lineWidth = 2;
       ctx.strokeRect(x0, y0, size, size);
 
       // a²
-      ctx.fillStyle = 'rgba(37, 99, 235, 0.35)';
+      ctx.fillStyle = isLight ? 'rgba(37, 99, 235, 0.15)' : 'rgba(37, 99, 235, 0.35)';
       ctx.fillRect(x0, y0, a, a);
       ctx.strokeStyle = '#3b82f6';
       ctx.strokeRect(x0, y0, a, a);
 
       // b²
-      ctx.fillStyle = 'rgba(6, 182, 212, 0.35)';
+      ctx.fillStyle = isLight ? 'rgba(6, 182, 212, 0.15)' : 'rgba(6, 182, 212, 0.35)';
       ctx.fillRect(x0 + a, y0 + a, b, b);
       ctx.strokeStyle = '#06b6d4';
       ctx.strokeRect(x0 + a, y0 + a, b, b);
 
       // ab top-right
-      ctx.fillStyle = 'rgba(124, 58, 237, 0.3)';
+      ctx.fillStyle = isLight ? 'rgba(124, 58, 237, 0.15)' : 'rgba(124, 58, 237, 0.3)';
       ctx.fillRect(x0 + a, y0, b, a);
       ctx.strokeStyle = '#8b5cf6';
       ctx.strokeRect(x0 + a, y0, b, a);
 
       // ab bottom-left
-      ctx.fillStyle = 'rgba(124, 58, 237, 0.3)';
+      ctx.fillStyle = isLight ? 'rgba(124, 58, 237, 0.15)' : 'rgba(124, 58, 237, 0.3)';
       ctx.fillRect(x0, y0 + a, a, b);
       ctx.strokeStyle = '#8b5cf6';
       ctx.strokeRect(x0, y0 + a, a, b);
 
       // Labels
-      ctx.fillStyle = '#e2e8f0';
+      ctx.fillStyle = isLight ? '#0f172a' : '#e2e8f0';
       ctx.font = '14px Be Vietnam Pro';
       ctx.textAlign = 'center';
       ctx.fillText('a²', x0 + a/2, y0 + a/2 + 5);
@@ -857,7 +1007,7 @@ Vậy a³ − b³ = (a − b)(a² + ab + b²).`,
       ctx.fillText('ab', x0 + a/2, y0 + a + b/2 + 5);
 
       ctx.font = '13px Be Vietnam Pro';
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
       ctx.fillText('(a + b)² = a² + 2ab + b²', w/2, h - 15);
     }
 
@@ -977,7 +1127,7 @@ Vậy a³ − b³ = (a − b)(a² + ab + b²).`,
       const user = document.getElementById('userAnswer').value.trim().replace(/\s+/g, '').replace(/\^2/g, '²').replace(/^3/, '³').toLowerCase();
       const correct = currentGen.answer.replace(/\s+/g, '').replace(/[—–−]/g, '-').toLowerCase();
       const fb = document.getElementById('feedback');
-      // Simple flexible check
+      
       if (user === correct || user.includes(correct) || correct.includes(user)) {
         fb.textContent = '✅ Chính xác! Giỏi lắm!';
         fb.className = 'feedback correct';
@@ -990,11 +1140,6 @@ Vậy a³ − b³ = (a − b)(a² + ab + b²).`,
     function showGenSolution() {
       document.getElementById('genSolution').classList.add('show');
     }
-
-    // Init geometry if needed
-    window.addEventListener('load', () => {
-      // Pre-draw if tab2 somehow active
-    });
   </script>
 </body>
 </html>
