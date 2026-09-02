@@ -181,7 +181,7 @@
             background-color: #fca5a5;
         }
 
-        /* Feedback */
+        /* Feedback & Steps */
         .feedback {
             margin-top: 1rem;
             padding: 0.75rem;
@@ -201,6 +201,31 @@
             display: block;
             background-color: #fee2e2;
             color: var(--wrong);
+        }
+
+        .solution-steps {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .solution-steps h3 {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .solution-steps ul {
+            padding-left: 1.2rem;
+        }
+
+        .solution-steps li {
+            margin-bottom: 0.4rem;
         }
 
         /* History Table */
@@ -335,7 +360,6 @@
 <body>
 
 <div class="container">
-    <!-- Cài đặt -->
     <div class="card">
         <h2>Tùy chỉnh phép tính</h2>
         <div class="settings-grid">
@@ -360,11 +384,9 @@
         </div>
     </div>
 
-    <!-- Khu vực làm bài -->
     <div class="card">
         <div class="math-box" id="math-box">
-            <!-- Phép tính sẽ render ở đây -->
-        </div>
+            </div>
 
         <div class="btn-group">
             <button class="btn-secondary" id="btn-generate">Tạo phép tính mới</button>
@@ -372,26 +394,23 @@
         </div>
 
         <div id="feedback" class="feedback"></div>
+        <div id="solution-steps" class="solution-steps"></div>
     </div>
 
-    <!-- Lịch sử -->
     <div class="card">
         <h2>
             Lịch sử tập luyện
             <button class="btn-danger" id="btn-clear-history">Xóa lịch sử</button>
         </h2>
         <div class="history-list" id="history-list">
-            <!-- Lịch sử sẽ render ở đây -->
-        </div>
+            </div>
     </div>
 </div>
 
-<!-- Floating Toggle Button cho Bảng nháp -->
 <button class="btn-scratchpad-toggle" id="btn-toggle-scratchpad">
     ✏️ Bảng nháp
 </button>
 
-<!-- Container Bảng Nháp -->
 <div class="scratchpad-container" id="scratchpad-container">
     <div class="scratchpad-header">
         <span style="font-weight: bold; font-size: 0.85rem;">Bảng Nháp</span>
@@ -420,6 +439,11 @@
         return a;
     }
 
+    function lcm(a, b) {
+        if (a === 0 || b === 0) return 0;
+        return Math.abs(a * b) / gcd(a, b);
+    }
+
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
@@ -435,6 +459,7 @@
     const btnGenerate = document.getElementById('btn-generate');
     const btnCheck = document.getElementById('btn-check');
     const feedback = document.getElementById('feedback');
+    const stepsBox = document.getElementById('solution-steps');
     const historyList = document.getElementById('history-list');
     const btnClearHistory = document.getElementById('btn-clear-history');
 
@@ -442,6 +467,8 @@
     function generateProblem() {
         feedback.className = 'feedback';
         feedback.style.display = 'none';
+        stepsBox.style.display = 'none';
+        stepsBox.innerHTML = '';
 
         let op = opSelect.value;
         if (op === 'random') {
@@ -454,16 +481,13 @@
         let n1, d1, n2, d2;
 
         if (mode === 'bcnn') {
-            // Chế độ tập trung BCNN: tạo mẫu số có BCNN/ƯCLN > 1
             const type = getRandomInt(1, 2);
             if (type === 1) {
-                // Mẫu này là bội của mẫu kia (VD: 3 và 6, 4 và 12)
                 d1 = getRandomInt(2, 6);
                 const k = getRandomInt(2, 3);
                 d2 = d1 * k;
                 if (Math.random() < 0.5) [d1, d2] = [d2, d1];
             } else {
-                // Mẫu số có chung ước số khác 1 (VD: 6 và 8 -> UCLN=2, BCNN=24)
                 const pairs = [[4,6], [6,8], [6,9], [8,10], [8,12], [9,12], [10,15], [12,15], [12,16]];
                 const pair = pairs[getRandomInt(0, pairs.length - 1)];
                 d1 = pair[0];
@@ -474,26 +498,22 @@
             n2 = getRandomInt(1, 9);
 
         } else if (mode === 'reducible') {
-            // Chế độ tập trung Phân số có thể rút gọn
             d1 = getRandomInt(2, 6) * 2;
-            n1 = getRandomInt(1, 4) * 2; // n1/d1 chưa tối giản
+            n1 = getRandomInt(1, 4) * 2;
             d2 = getRandomInt(2, 6);
             n2 = getRandomInt(1, 8);
         } else {
-            // Ngẫu nhiên hoàn toàn
             n1 = getRandomInt(1, 9);
             d1 = getRandomInt(2, 12);
             n2 = getRandomInt(1, 9);
             d2 = getRandomInt(2, 12);
         }
 
-        // Đảm bảo kết quả không âm khi làm phép trừ
         if (op === '-' && (n1/d1 < n2/d2)) {
             [n1, n2] = [n2, n1];
             [d1, d2] = [d2, d1];
         }
 
-        // Tính kết quả chuẩn
         let resNum, resDen;
         if (op === '+') {
             resNum = n1 * d2 + n2 * d1;
@@ -509,7 +529,6 @@
             resDen = d1 * n2;
         }
 
-        // Rút gọn kết quả về tối giản
         const common = gcd(resNum, resDen);
         const finalNum = resNum / common;
         const finalDen = resDen / common;
@@ -518,7 +537,6 @@
         renderProblem();
     }
 
-    // Hiển thị phép tính
     function renderProblem() {
         const opSymbol = { '+': '+', '-': '-', '*': '×', '/': '÷' }[currentProblem.op];
 
@@ -540,6 +558,73 @@
         `;
     }
 
+    // --- Tạo chi tiết các bước giải ---
+    function generateStepsExplanation() {
+        const { n1, d1, op, n2, d2, finalNum, finalDen } = currentProblem;
+        const opSymbol = { '+': '+', '-': '-', '*': '×', '/': '÷' }[op];
+        let steps = [];
+
+        // Kiểm tra rút gọn ban đầu
+        const g1 = gcd(n1, d1);
+        const g2 = gcd(n2, d2);
+        let sN1 = n1 / g1, sD1 = d1 / g1;
+        let sN2 = n2 / g2, sD2 = d2 / g2;
+
+        if (g1 > 1 || g2 > 1) {
+            let step1Str = "Rút gọn phân số ban đầu:";
+            if (g1 > 1) step1Str += ` ${n1}/${d1} = ${sN1}/${sD1};`;
+            if (g2 > 1) step1Str += ` ${n2}/${d2} = ${sN2}/${sD2};`;
+            steps.push(step1Str);
+        }
+
+        if (op === '+' || op === '-') {
+            if (sD1 === sD2) {
+                steps.push(`Hai phân số cùng mẫu số (${sD1}). Cùng tính tử số:`);
+                steps.push(`${sN1} ${opSymbol} ${sN2} = ${op === '+' ? sN1 + sN2 : sN1 - sN2}`);
+            } else {
+                const gDen = gcd(sD1, sD2);
+                const commonDen = lcm(sD1, sD2);
+
+                if (gDen > 1) {
+                    steps.push(`Tìm mẫu số chung nhỏ nhất bằng BCNN:`);
+                    steps.push(`ƯCLN(${sD1}, ${sD2}) = ${gDen} ⇒ Mẫu số chung = BCNN(${sD1}, ${sD2}) = ${commonDen}`);
+                } else {
+                    steps.push(`Hai mẫu số nguyên tố cùng nhau ⇒ Mẫu số chung = ${sD1} × ${sD2} = ${commonDen}`);
+                }
+
+                const k1 = commonDen / sD1;
+                const k2 = commonDen / sD2;
+                const newN1 = sN1 * k1;
+                const newN2 = sN2 * k2;
+
+                steps.push(`Quy đồng mẫu số:`);
+                steps.push(`${sN1}/${sD1} = (${sN1} × ${k1})/(${sD1} × ${k1}) = ${newN1}/${commonDen}`);
+                steps.push(`${sN2}/${sD2} = (${sN2} × ${k2})/(${sD2} × ${k2}) = ${newN2}/${commonDen}`);
+
+                const calcNum = op === '+' ? newN1 + newN2 : newN1 - newN2;
+                steps.push(`Thực hiện phép tính trên tử số:`);
+                steps.push(`${newN1}/${commonDen} ${opSymbol} ${newN2}/${commonDen} = (${newN1} ${opSymbol} ${newN2}) / ${commonDen} = ${calcNum}/${commonDen}`);
+            }
+        } else if (op === '*') {
+            steps.push(`Thực hiện nhân tử với tử, mẫu với mẫu:`);
+            steps.push(`Tử số: ${sN1} × ${sN2} = ${sN1 * sN2}`);
+            steps.push(`Mẫu số: ${sD1} × ${sD2} = ${sD1 * sD2}`);
+            steps.push(`Kết quả: ${sN1 * sN2}/${sD1 * sD2}`);
+        } else if (op === '/') {
+            steps.push(`Chuyển phép chia thành phép nhân với phân số đảo ngược:`);
+            steps.push(`${sN1}/${sD1} ÷ ${sN2}/${sD2} = ${sN1}/${sD1} × ${sD2}/${sN2}`);
+            steps.push(`Tử số: ${sN1} × ${sD2} = ${sN1 * sD2}`);
+            steps.push(`Mẫu số: ${sD1} × ${sN2} = ${sD1 * sN2}`);
+            steps.push(`Kết quả: ${sN1 * sD2}/${sD1 * sN2}`);
+        }
+
+        // Bước rút gọn cuối
+        const resStr = finalDen === 1 ? `${finalNum}` : `${finalNum}/${finalDen}`;
+        steps.push(`<strong>Kết quả tối giản:</strong> ${resStr}`);
+
+        return steps;
+    }
+
     // Kiểm tra đáp án
     function checkAnswer() {
         const userNum = parseInt(document.getElementById('ans-num').value);
@@ -548,12 +633,14 @@
         if (isNaN(userNum) || isNaN(userDen)) {
             feedback.className = 'feedback wrong';
             feedback.textContent = 'Vui lòng nhập đầy đủ Tử số và Mẫu số!';
+            stepsBox.style.display = 'none';
             return;
         }
 
         if (userDen === 0) {
             feedback.className = 'feedback wrong';
             feedback.textContent = 'Mẫu số phải khác 0!';
+            stepsBox.style.display = 'none';
             return;
         }
 
@@ -578,6 +665,11 @@
             feedback.className = 'feedback wrong';
             feedback.textContent = `Chưa chính xác. Đáp án tối giản là: ${correctStr}`;
         }
+
+        // Render các bước giải chi tiết
+        const steps = generateStepsExplanation();
+        stepsBox.innerHTML = `<h3>Hướng dẫn từng bước:</h3><ul>${steps.map(s => `<li>${s}</li>`).join('')}</ul>`;
+        stepsBox.style.display = 'block';
 
         saveHistory({
             expr: exprStr,
@@ -677,7 +769,6 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     });
 
-    // Chọn màu bút vẽ
     document.querySelectorAll('.color-dot').forEach(dot => {
         dot.addEventListener('click', (e) => {
             document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
@@ -687,7 +778,6 @@
         });
     });
 
-    // Xử lý sự kiện vẽ (Chuột & Cảm ứng)
     function getPos(e) {
         const rect = canvas.getBoundingClientRect();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
