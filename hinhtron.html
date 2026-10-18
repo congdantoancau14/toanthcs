@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khám Phá Chu Vi, Diện Tích Hình Tròn & Hằng Số Pi (3,14)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        canvas {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <header class="text-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-600 mb-2">Bản Chất Hình Học Của Chu Vi, Diện Tích & Hằng Số Pi (π ≈ 3,14)</h1>
+            <p class="text-slate-600 text-lg">Mô phỏng trực quan giúp hiểu sâu vì sao hằng số 3,14 lại xuất hiện</p>
+        </header>
+
+        <!-- Summary Formula Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Circumference Card -->
+            <section class="bg-gradient-to-br from-blue-700 to-indigo-800 text-white p-6 rounded-2xl shadow-md text-center">
+                <h2 class="text-lg font-semibold text-blue-200 uppercase tracking-wider">1. Chu Vi Hình Tròn</h2>
+                <div class="text-3xl md:text-4xl font-bold my-3 tracking-wide">
+                    C = π × d = 2 × π × r
+                </div>
+                <p class="text-sm text-blue-100">Độ dài đường bao quanh hình tròn gấp khoảng <b>3,14 lần</b> đường kính (d)</p>
+            </section>
+
+            <!-- Area Card -->
+            <section class="bg-gradient-to-br from-emerald-700 to-teal-800 text-white p-6 rounded-2xl shadow-md text-center">
+                <h2 class="text-lg font-semibold text-emerald-200 uppercase tracking-wider">2. Diện Tích Hình Tròn</h2>
+                <div class="text-3xl md:text-4xl font-bold my-3 tracking-wide">
+                    S = π × r² ≈ 3,14 × r²
+                </div>
+                <p class="text-sm text-emerald-100">Diện tích hình tròn bằng khoảng <b>3,14 lần</b> diện tích hình vuông cạnh r</p>
+            </section>
+        </div>
+
+        <!-- SECTION 1: Rolling Wheel Simulation -->
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-6">
+            <div>
+                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Mô phỏng 1: Nguồn gốc số Pi (3,14)</span>
+                <h3 class="text-2xl font-bold mt-2 mb-2 text-slate-800">Chu Vi Hình Tròn & Thí Nghiệm "Lăn Bánh Xe"</h3>
+                <p class="text-slate-600 leading-relaxed">
+                    Cho một bánh xe có đường kính <b class="text-blue-600">d</b>. Khi lăn bánh xe đúng <b>1 vòng hoàn chỉnh (360°)</b> trên mặt đất, quãng đường nó đi được dài đúng <b>3,14 lần đường kính</b> (π × d). Hãy quan sát các vạch chia 1d, 2d, 3d và đoạn nhô thêm 0,14d trên thước đo!
+                </p>
+            </div>
+
+            <!-- Controls for Wheel -->
+            <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-slate-100 rounded-xl">
+                <div class="flex items-center space-x-3">
+                    <button id="playWheelBtn" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow transition flex items-center gap-2">
+                        <span>▶</span> <span>Cho bánh xe lăn</span>
+                    </button>
+                    <button id="resetWheelBtn" class="px-4 py-2.5 bg-slate-300 hover:bg-slate-400 text-slate-800 font-semibold rounded-lg transition">
+                        ↺ Đặt lại
+                    </button>
+                </div>
+                <div class="flex items-center space-x-3 w-full sm:w-auto">
+                    <label for="wheelSlider" class="font-medium text-slate-700 text-sm">Góc quay (0° - 360°):</label>
+                    <input id="wheelSlider" type="range" min="0" max="1" step="0.002" value="0" class="w-48 accent-indigo-600">
+                    <span id="wheelAngleVal" class="font-bold text-indigo-600 min-w-[3.5rem] text-right">0°</span>
+                </div>
+            </div>
+
+            <!-- Canvas for Wheel -->
+            <div class="flex justify-center">
+                <canvas id="wheelCanvas" width="800" height="260" class="w-full max-w-[800px]"></canvas>
+            </div>
+            
+            <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl text-slate-700 text-sm">
+                <b>💡 Kết luận rút ra:</b> Tỷ lệ giữa Chu vi và Đường kính của <i>mọi</i> hình tròn luôn luôn là hằng số π = Chu vi ÷ d ≈ 3,14159...
+            </div>
+        </section>
+
+        <!-- SECTION 2: Inscribed Circle in Square -->
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+                <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Mô phỏng 2: Trực quan diện tích</span>
+                <h3 class="text-2xl font-bold mt-2 mb-4 text-slate-800">Hình Tròn Nội Tiếp Hình Vuông</h3>
+                <p class="text-slate-600 mb-4 leading-relaxed">
+                    Xét một hình vuông lớn có cạnh là 2r (đường kính d). Hình vuông này được ghép từ 4 hình vuông nhỏ có diện tích là r².
+                </p>
+                <ul class="space-y-3 text-slate-700">
+                    <li class="flex items-start">
+                        <span class="inline-block w-3 h-3 bg-indigo-500 rounded-full mt-1.5 mr-2"></span>
+                        <span>Diện tích 1 hình vuông nhỏ (cạnh r): <b>r²</b></span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="inline-block w-3 h-3 bg-red-400 rounded-full mt-1.5 mr-2"></span>
+                        <span>Diện tích hình vuông lớn (4 hình nhỏ): <b>4 × r²</b></span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="inline-block w-3 h-3 bg-emerald-500 rounded-full mt-1.5 mr-2"></span>
+                        <span>Khi cắt gọt 4 góc thừa ngoài hình tròn (mất ~21,5% diện tích), diện tích giảm từ <b>4 × r²</b> xuống còn đúng <b>3,14 × r²</b>.</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="flex flex-col items-center">
+                <canvas id="squareCanvas" width="360" height="360" class="w-full max-w-[360px]"></canvas>
+                <p class="text-xs text-slate-400 mt-2 text-center">Hình tròn bán kính r nội tiếp hình vuông cạnh 2r</p>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Cut & Reassemble Method -->
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-6">
+            <div>
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Mô phỏng 3: Cắt ghép hình chữ nhật</span>
+                <h3 class="text-2xl font-bold mt-2 mb-2 text-slate-800">Biến Đổi Quạt Tròn Thành Hình Chữ Nhật</h3>
+                <p class="text-slate-600">
+                    Khi chia nhỏ hình tròn thành nhiều hình quạt bằng nhau rồi ghép đan xen, hình dạng sẽ dần biến thành một <b>Hình Chữ Nhật</b>:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <p class="font-semibold text-indigo-600">Chiều rộng hình chữ nhật:</p>
+                        <p class="text-lg">Chính là bán kính <b class="text-indigo-600">r</b></p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <p class="font-semibold text-emerald-600">Chiều dài hình chữ nhật:</p>
+                        <p class="text-lg">Bằng nửa chu vi hình tròn = <b class="text-emerald-600">π × r</b> (vì Chu vi ÷ 2 = 2 × π × r ÷ 2)</p>
+                    </div>
+                </div>
+                <p class="text-slate-700 text-lg">
+                    Do đó: <b>Diện tích = Chiều dài × Chiều rộng = (π × r) × r = π × r²</b>
+                </p>
+            </div>
+
+            <!-- Controls for Slices -->
+            <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-slate-100 rounded-xl">
+                <div class="flex items-center space-x-3 w-full sm:w-auto">
+                    <label for="sliceSlider" class="font-medium text-slate-700 text-sm">Số mảnh cắt:</label>
+                    <input id="sliceSlider" type="range" min="4" max="64" step="4" value="16" class="w-48 accent-indigo-600">
+                    <span id="sliceValue" class="font-bold text-indigo-600 min-w-[2rem]">16</span>
+                </div>
+                <div class="flex items-center space-x-3 w-full sm:w-auto">
+                    <label for="animSlider" class="font-medium text-slate-700 text-sm">Tiến trình biến đổi:</label>
+                    <input id="animSlider" type="range" min="0" max="1" step="0.01" value="0" class="w-48 accent-indigo-600">
+                </div>
+            </div>
+
+            <!-- Canvas for Slices -->
+            <div class="flex justify-center">
+                <canvas id="sliceCanvas" width="700" height="320" class="w-full max-w-[700px]"></canvas>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-slate-500 text-sm py-4">
+            <p>Mô phỏng toán học trực quan — Hướng dẫn công thức Chu vi C = π × d và Diện tích S = π × r²</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // CANVAS 1: ROLLING WHEEL SIMULATION
+        // ==========================================
+        const wheelCanvas = document.getElementById('wheelCanvas');
+        const ctxWheel = wheelCanvas.getContext('2d');
+        const wheelSlider = document.getElementById('wheelSlider');
+        const wheelAngleVal = document.getElementById('wheelAngleVal');
+        const playWheelBtn = document.getElementById('playWheelBtn');
+        const resetWheelBtn = document.getElementById('resetWheelBtn');
+
+        let wheelAnimId = null;
+        let isWheelPlaying = false;
+
+        function drawWheelSimulation() {
+            const progress = parseFloat(wheelSlider.value); // 0 to 1 (0 to 1 full turn)
+            const angleDeg = Math.round(progress * 360);
+            wheelAngleVal.textContent = angleDeg + '°';
+
+            const width = wheelCanvas.width;
+            const height = wheelCanvas.height;
+            ctxWheel.clearRect(0, 0, width, height);
+
+            const groundY = 180;
+            const radius = 40;
+            const diameter = radius * 2; // d = 80px
+            const startX = 80;
+
+            // Distance travelled = progress * PI * diameter
+            const distance = progress * Math.PI * diameter;
+            const currentX = startX + distance;
+            const currentY = groundY - radius;
+
+            // 1. Draw Ground Line & Ruler Marks
+            ctxWheel.strokeStyle = '#334155';
+            ctxWheel.lineWidth = 3;
+            ctxWheel.beginPath();
+            ctxWheel.moveTo(20, groundY);
+            ctxWheel.lineTo(width - 20, groundY);
+            ctxWheel.stroke();
+
+            // Ruler Scale Ticks
+            const ticks = [
+                { mult: 0, label: '0' },
+                { mult: 1, label: '1d' },
+                { mult: 2, label: '2d' },
+                { mult: 3, label: '3d' },
+                { mult: Math.PI, label: '3,14d (πd)' }
+            ];
+
+            ticks.forEach(tick => {
+                const tickX = startX + tick.mult * diameter;
+                const isPi = tick.mult === Math.PI;
+
+                ctxWheel.beginPath();
+                ctxWheel.moveTo(tickX, groundY);
+                ctxWheel.lineTo(tickX, groundY + (isPi ? 22 : 12));
+                ctxWheel.strokeStyle = isPi ? '#ef4444' : '#64748b';
+                ctxWheel.lineWidth = isPi ? 2.5 : 1.5;
+                ctxWheel.stroke();
+
+                // Labels
+                ctxWheel.fillStyle = isPi ? '#dc2626' : '#475569';
+                ctxWheel.font = isPi ? 'bold 13px sans-serif' : '12px sans-serif';
+                ctxWheel.textAlign = 'center';
+                ctxWheel.fillText(tick.label, tickX, groundY + (isPi ? 38 : 28));
+            });
+
+            // 2. Draw Trailed Red Trace Line (Circumference on Ground)
+            if (distance > 0) {
+                ctxWheel.strokeStyle = '#ef4444';
+                ctxWheel.lineWidth = 4;
+                ctxWheel.beginPath();
+                ctxWheel.moveTo(startX, groundY);
+                ctxWheel.lineTo(currentX, groundY);
+                ctxWheel.stroke();
+
+                // Show distance text overlay
+                const piMultiplier = (progress * Math.PI).toFixed(2).replace('.', ',');
+                ctxWheel.fillStyle = '#b91c1c';
+                ctxWheel.font = 'bold 13px sans-serif';
+                ctxWheel.textAlign = 'center';
+                ctxWheel.fillText(`Quãng đường = ${piMultiplier} × d`, startX + distance / 2, groundY - 10);
+            }
+
+            // 3. Draw Rolling Wheel
+            ctxWheel.save();
+            ctxWheel.translate(currentX, currentY);
+            ctxWheel.rotate(progress * Math.PI * 2); // Rotation angle
+
+            // Wheel Outer Rim
+            ctxWheel.beginPath();
+            ctxWheel.arc(0, 0, radius, 0, Math.PI * 2);
+            ctxWheel.fillStyle = '#e0e7ff';
+            ctxWheel.fill();
+            ctxWheel.strokeStyle = '#4f46e5';
+            ctxWheel.lineWidth = 4;
+            ctxWheel.stroke();
+
+            // Wheel Spokes
+            ctxWheel.strokeStyle = '#818cf8';
+            ctxWheel.lineWidth = 2;
+            for (let i = 0; i < 4; i++) {
+                ctxWheel.beginPath();
+                ctxWheel.moveTo(0, 0);
+                ctxWheel.lineTo(radius * Math.cos(i * Math.PI / 2), radius * Math.sin(i * Math.PI / 2));
+                ctxWheel.stroke();
+            }
+
+            // Contact Marker Dot (Red dot starting at bottom)
+            ctxWheel.beginPath();
+            ctxWheel.arc(0, radius, 6, 0, Math.PI * 2);
+            ctxWheel.fillStyle = '#ef4444';
+            ctxWheel.fill();
+
+            // Center Hub
+            ctxWheel.beginPath();
+            ctxWheel.arc(0, 0, 5, 0, Math.PI * 2);
+            ctxWheel.fillStyle = '#1e1b4b';
+            ctxWheel.fill();
+
+            ctxWheel.restore();
+
+            // 4. Diameter Line Visual Helper (Inside/Above wheel)
+            ctxWheel.strokeStyle = '#0284c7';
+            ctxWheel.lineWidth = 2;
+            ctxWheel.beginPath();
+            ctxWheel.moveTo(currentX - radius, currentY);
+            ctxWheel.lineTo(currentX + radius, currentY);
+            ctxWheel.stroke();
+
+            ctxWheel.fillStyle = '#0369a1';
+            ctxWheel.font = 'bold 12px sans-serif';
+            ctxWheel.textAlign = 'center';
+            ctxWheel.fillText('Đường kính d', currentX, currentY - 8);
+        }
+
+        // Animation Loop for Wheel
+        function animateWheel() {
+            let val = parseFloat(wheelSlider.value) + 0.005;
+            if (val > 1) {
+                val = 1;
+                isWheelPlaying = false;
+                playWheelBtn.innerHTML = '<span>▶</span> <span>Cho bánh xe lăn</span>';
+            }
+            wheelSlider.value = val;
+            drawWheelSimulation();
+
+            if (isWheelPlaying && val < 1) {
+                wheelAnimId = requestAnimationFrame(animateWheel);
+            }
+        }
+
+        playWheelBtn.addEventListener('click', () => {
+            if (isWheelPlaying) {
+                isWheelPlaying = false;
+                cancelAnimationFrame(wheelAnimId);
+                playWheelBtn.innerHTML = '<span>▶</span> <span>Cho bánh xe lăn</span>';
+            } else {
+                if (parseFloat(wheelSlider.value) >= 1) {
+                    wheelSlider.value = 0;
+                }
+                isWheelPlaying = true;
+                playWheelBtn.innerHTML = '<span>⏸</span> <span>Tạm dừng</span>';
+                animateWheel();
+            }
+        });
+
+        resetWheelBtn.addEventListener('click', () => {
+            isWheelPlaying = false;
+            cancelAnimationFrame(wheelAnimId);
+            wheelSlider.value = 0;
+            playWheelBtn.innerHTML = '<span>▶</span> <span>Cho bánh xe lăn</span>';
+            drawWheelSimulation();
+        });
+
+        wheelSlider.addEventListener('input', () => {
+            if (isWheelPlaying) {
+                isWheelPlaying = false;
+                cancelAnimationFrame(wheelAnimId);
+                playWheelBtn.innerHTML = '<span>▶</span> <span>Cho bánh xe lăn</span>';
+            }
+            drawWheelSimulation();
+        });
+
+
+        // ==========================================
+        // CANVAS 2: INSCRIBED CIRCLE IN SQUARE
+        // ==========================================
+        const squareCanvas = document.getElementById('squareCanvas');
+        const ctxSquare = squareCanvas.getContext('2d');
+
+        function drawSquareIllustration() {
+            const width = squareCanvas.width;
+            const height = squareCanvas.height;
+            const center = width / 2;
+            const size = 260; // Size of big square
+            const r = size / 2;
+
+            ctxSquare.clearRect(0, 0, width, height);
+
+            const topLeftX = center - r;
+            const topLeftY = center - r;
+
+            // 1. Big Square Background (Red corners)
+            ctxSquare.fillStyle = '#fee2e2';
+            ctxSquare.fillRect(topLeftX, topLeftY, size, size);
+
+            // 2. Circle inside (Green)
+            ctxSquare.beginPath();
+            ctxSquare.arc(center, center, r, 0, Math.PI * 2);
+            ctxSquare.fillStyle = '#d1fae5';
+            ctxSquare.fill();
+            ctxSquare.strokeStyle = '#059669';
+            ctxSquare.lineWidth = 3;
+            ctxSquare.stroke();
+
+            // 3. Grid lines for 4 small squares
+            ctxSquare.strokeStyle = '#94a3b8';
+            ctxSquare.lineWidth = 1;
+            ctxSquare.setLineDash([5, 5]);
+
+            ctxSquare.beginPath();
+            ctxSquare.moveTo(center, topLeftY);
+            ctxSquare.lineTo(center, topLeftY + size);
+            ctxSquare.moveTo(topLeftX, center);
+            ctxSquare.lineTo(topLeftX + size, center);
+            ctxSquare.stroke();
+            ctxSquare.setLineDash([]);
+
+            // Big Square Border
+            ctxSquare.strokeStyle = '#ef4444';
+            ctxSquare.lineWidth = 2;
+            ctxSquare.strokeRect(topLeftX, topLeftY, size, size);
+
+            // Radius Line
+            ctxSquare.beginPath();
+            ctxSquare.moveTo(center, center);
+            ctxSquare.lineTo(center + r, center);
+            ctxSquare.strokeStyle = '#4f46e5';
+            ctxSquare.lineWidth = 3;
+            ctxSquare.stroke();
+
+            // Label 'r'
+            ctxSquare.fillStyle = '#4f46e5';
+            ctxSquare.font = 'bold 16px sans-serif';
+            ctxSquare.fillText('r', center + r / 2 - 5, center - 10);
+
+            // Labels
+            ctxSquare.fillStyle = '#991b1b';
+            ctxSquare.font = '12px sans-serif';
+            ctxSquare.fillText('Góc thừa', topLeftX + 10, topLeftY + 25);
+            ctxSquare.fillText('Góc thừa', topLeftX + size - 65, topLeftY + 25);
+
+            ctxSquare.fillStyle = '#1e293b';
+            ctxSquare.font = 'bold 14px sans-serif';
+            ctxSquare.fillText('Diện tích vuông lớn = 4 × r²', topLeftX, topLeftY - 12);
+            ctxSquare.fillStyle = '#059669';
+            ctxSquare.fillText('Diện tích tròn = 3,14 × r²', topLeftX, topLeftY + size + 25);
+        }
+
+
+        // ==========================================
+        // CANVAS 3: SLICE TRANSFORMATION
+        // ==========================================
+        const sliceCanvas = document.getElementById('sliceCanvas');
+        const ctxSlice = sliceCanvas.getContext('2d');
+        const sliceSlider = document.getElementById('sliceSlider');
+        const sliceValue = document.getElementById('sliceValue');
+        const animSlider = document.getElementById('animSlider');
+
+        function drawSliceIllustration() {
+            const numSlices = parseInt(sliceSlider.value);
+            const progress = parseFloat(animSlider.value);
+            sliceValue.textContent = numSlices;
+
+            const width = sliceCanvas.width;
+            const height = sliceCanvas.height;
+            ctxSlice.clearRect(0, 0, width, height);
+
+            const r = 85;
+            const sliceAngle = (Math.PI * 2) / numSlices;
+
+            const circleCX = 160;
+            const circleCY = height / 2;
+
+            const rectStartX = 340;
+            const rectCY = height / 2;
+
+            for (let i = 0; i < numSlices; i++) {
+                const isEven = i % 2 === 0;
+                const fillColor = isEven ? '#6366f1' : '#10b981';
+
+                const startAngle = i * sliceAngle;
+                const midAngle = startAngle + sliceAngle / 2;
+
+                const sliceWidth = (Math.PI * 2 * r) / numSlices;
+                const rX = rectStartX + (i * sliceWidth / 2);
+                const rY = isEven ? rectCY - r / 2 : rectCY + r / 2;
+
+                const currentX = circleCX + (rX - circleCX) * progress;
+                const currentY = circleCY + (rY - circleCY) * progress;
+
+                ctxSlice.save();
+                ctxSlice.translate(currentX, currentY);
+
+                const targetRot = isEven ? Math.PI / 2 : -Math.PI / 2;
+                const currentRot = midAngle + (targetRot - midAngle) * progress;
+
+                ctxSlice.rotate(currentRot);
+
+                ctxSlice.beginPath();
+                ctxSlice.moveTo(0, 0);
+                ctxSlice.arc(0, 0, r, -sliceAngle / 2, sliceAngle / 2);
+                ctxSlice.closePath();
+
+                ctxSlice.fillStyle = fillColor;
+                ctxSlice.fill();
+                ctxSlice.strokeStyle = '#ffffff';
+                ctxSlice.lineWidth = 1.5;
+                ctxSlice.stroke();
+
+                ctxSlice.restore();
+            }
+
+            if (progress > 0.8) {
+                ctxSlice.fillStyle = '#059669';
+                ctxSlice.font = 'bold 13px sans-serif';
+                ctxSlice.fillText('Chiều dài = π × r (Nửa chu vi)', rectStartX, rectCY + r + 22);
+
+                ctxSlice.fillStyle = '#4f46e5';
+                ctxSlice.fillText('Rộng = r', rectStartX + (Math.PI * r) + 10, rectCY + 5);
+            }
+        }
+
+        sliceSlider.addEventListener('input', drawSliceIllustration);
+        animSlider.addEventListener('input', drawSliceIllustration);
+
+        // Initial Renders
+        drawWheelSimulation();
+        drawSquareIllustration();
+        drawSliceIllustration();
+    </script>
+</body>
+</html>
