@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sổ Tay Hình Học Phẳng & Mô Hình Tương Tác (Unicode Text)</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        canvas {
+            touch-action: none;
+        }
+        .math-text {
+            font-family: "Cambria Math", "Georgia", "Times New Roman", serif;
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased text-slate-800 flex flex-col md:flex-row overflow-hidden">
+
+    <!-- Mobile Header -->
+    <header class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center z-50 shadow-md">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-shapes text-sky-400 text-xl"></i>
+            <span class="font-bold text-lg tracking-wide">Hình Học Phẳng</span>
+        </div>
+        <button id="toggleSidebar" class="p-2 text-slate-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 w-72 bg-slate-900 text-slate-300 flex flex-col z-40 transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none">
+        <div class="p-5 border-b border-slate-800 flex items-center space-x-3 hidden md:flex">
+            <div class="p-2 bg-sky-500/10 rounded-lg text-sky-400">
+                <i class="fa-solid fa-shapes text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-white text-base leading-tight">Hình Học Phẳng</h1>
+                <p class="text-xs text-slate-400">Thuần Unicode Math & Canvas 2D</p>
+            </div>
+        </div>
+
+        <!-- Search Box -->
+        <div class="p-4 border-b border-slate-800">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Tìm kiến thức, định lý (vd: Euler, Ptolemy...)..." 
+                    class="w-full pl-9 pr-3 py-2 bg-slate-800 text-sm text-slate-200 placeholder-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 border border-slate-700/50">
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex-1 overflow-y-auto p-4 space-y-6 text-sm" id="navContainer">
+            <div>
+                <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2 px-2">Chủ đề kiến thức</div>
+                <ul class="space-y-1">
+                    <li>
+                        <button data-target="sec-angles" class="nav-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2 active">
+                            <i class="fa-solid fa-angle-left w-4 text-sky-400"></i>
+                            <span>1. Các Loại Góc & Tính Chất</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button data-target="sec-lines" class="nav-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2">
+                            <i class="fa-solid fa-bezier-curve w-4 text-amber-400"></i>
+                            <span>2. Các Đường Đặc Biệt</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button data-target="sec-theorems" class="nav-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2">
+                            <i class="fa-solid fa-award w-4 text-emerald-400"></i>
+                            <span>3. Các Định Lý Kinh Điển</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button data-target="sec-concepts" class="nav-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2">
+                            <i class="fa-solid fa-draw-polygon w-4 text-purple-400"></i>
+                            <span>4. Khái Niệm & Dấu Hiệu</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2 px-2">Ký hiệu Unicode mẫu</div>
+                <div class="p-3 bg-slate-800/60 rounded-lg text-xs space-y-1 text-slate-400 math-text">
+                    <p>∠ABC, △ABC, ⊙O, ⌢AB</p>
+                    <p>a² + b² = c², √x, ½, ⅓</p>
+                    <p>⊥ (vuông góc), ∥ (song song)</p>
+                    <p>≡, ≈, ≅, ∈, ∉, ⊂, α, β, π, Δ</p>
+                </div>
+            </div>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
+            Sổ Tay Hình Học Phẳng Unicode &copy; 2026
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 hidden md:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 h-full overflow-y-auto bg-slate-50 p-4 md:p-8 space-y-10" id="mainContent">
+        
+        <!-- Header Banner -->
+        <div class="bg-gradient-to-r from-sky-700 via-indigo-800 to-slate-900 rounded-2xl p-6 md:p-8 text-white shadow-lg relative overflow-hidden">
+            <div class="relative z-10 max-w-3xl">
+                <span class="bg-sky-400/20 text-sky-200 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-sky-400/30">Hiển thị Thuần Text & Unicode Math</span>
+                <h2 class="text-2xl md:text-3xl font-extrabold mt-3 leading-tight">Sổ Tay Tổng Hợp Kiến Thức Hình Học Phẳng</h2>
+                <p class="text-slate-200 text-sm md:text-base mt-2 leading-relaxed">
+                    Tổng hợp đầy đủ lý thuyết góc, các đường đặc biệt, các định lý lớn (Thales, Pitago, Ceva, Menelaus, Ptolemy, Euclid, Stewart...) và phòng thí nghiệm Canvas 2D kéo thả trực quan.
+                </p>
+            </div>
+            <div class="absolute -right-6 -bottom-10 opacity-10 text-white pointer-events-none">
+                <i class="fa-solid fa-shapes text-[240px]"></i>
+            </div>
+        </div>
+
+        <!-- SECTION 1: CÁC LOẠI GÓC -->
+        <section id="sec-angles" class="content-section space-y-6">
+            <div class="flex items-center space-x-3 border-b border-slate-200 pb-3">
+                <div class="p-2 bg-sky-100 text-sky-600 rounded-lg">
+                    <i class="fa-solid fa-angle-left text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">1. Các Loại Góc & Tính Chất</h2>
+                    <p class="text-xs text-slate-500">Các vị trí tương đối của góc, góc tạo bởi đường thẳng cắt nhau và các góc trong đường tròn (⊙O)</p>
+                </div>
+            </div>
+
+            <!-- Card: Góc Đối đỉnh, So le trong, Đồng vị -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition card-item" data-keywords="góc đối đỉnh so le trong đồng vị trong cùng phía hai đường thẳng song song">
+                <div class="p-5 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-6 space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-sky-100 text-sky-700 text-xs font-bold px-2.5 py-0.5 rounded">Góc & Đường Thẳng</span>
+                            <h3 class="font-bold text-lg text-slate-800">Góc Đối Đỉnh, So Le Trong, Đồng Vị</h3>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed">Khi một cát tuyến c cắt hai đường thẳng a và b:</p>
+                        <ul class="text-sm text-slate-600 space-y-2 list-disc list-inside math-text">
+                            <li><strong>Hai góc đối đỉnh:</strong> Bằng nhau (∠A₁ = ∠A₃).</li>
+                            <li><strong>Hai góc kề bù:</strong> Có tổng số đo bằng 180° (∠A₁ + ∠A₂ = 180°).</li>
+                            <li><strong>Khi a ∥ b (a song song b):</strong>
+                                <ul class="pl-6 list-circle space-y-1 text-xs text-slate-500 mt-1">
+                                    <li>Hai góc so le trong bằng nhau (∠A₁ = ∠B₃).</li>
+                                    <li>Hai góc đồng vị bằng nhau (∠A₁ = ∠B₁).</li>
+                                    <li>Hai góc trong cùng phía bù nhau (∠A₁ + ∠B₂ = 180°).</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="lg:col-span-6 flex flex-col items-center justify-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-hand-pointer mr-1"></i>Kéo thanh slider để xoay cát tuyến</span>
+                            <span class="text-xs font-bold text-sky-600 math-text">a ∥ b</span>
+                        </div>
+                        <canvas id="canvasParallel" width="380" height="220" class="bg-white rounded-lg border border-slate-200 shadow-inner w-full max-w-[380px] h-[220px]"></canvas>
+                        <div class="w-full max-w-[380px] mt-3 flex items-center space-x-2">
+                            <label class="text-xs text-slate-500 whitespace-nowrap">Góc nghiêng α:</label>
+                            <input type="range" id="sliderParallelAngle" min="30" max="150" value="65" class="w-full accent-sky-600">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Các Góc Trong Đường Tròn -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition card-item" data-keywords="góc ở tâm góc nội tiếp góc tạo bởi tiếp tuyến và dây cung góc có đỉnh bên trong bên ngoài đường tròn">
+                <div class="p-5 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-6 space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-0.5 rounded">Góc Trong Đường Tròn (⊙O)</span>
+                            <h3 class="font-bold text-lg text-slate-800">Các Loại Góc Trong Đường Tròn</h3>
+                        </div>
+                        <div class="text-sm text-slate-600 space-y-3 math-text">
+                            <div>
+                                <p class="font-semibold text-slate-800">1. Góc ở tâm:</p>
+                                <p>Số đo bằng số đo cung bị chắn: ∠AOB = sđ ⌢AB.</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-800">2. Góc nội tiếp:</p>
+                                <p>Có đỉnh nằm trên (⊙O). Số đo bằng nửa số đo cung bị chắn: ∠ACB = ½ sđ ⌢AB = ½ ∠AOB.</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-800">3. Góc tạo bởi tiếp tuyến Ax và dây cung AB:</p>
+                                <p>Số đo bằng nửa số đo cung bị chắn: ∠xAB = ½ sđ ⌢AB.</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-800">4. Góc có đỉnh ở trong / ngoài đường tròn:</p>
+                                <p>Trong: ∠E = ½ (sđ ⌢AB + sđ ⌢CD) | Ngoài: ∠F = ½ (sđ ⌢AB - sđ ⌢CD).</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-6 flex flex-col items-center justify-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-hand-pointer mr-1"></i>Kéo đỉnh C xung quanh vòng tròn</span>
+                            <span id="circleAngleVal" class="text-xs font-bold text-indigo-600 math-text">∠ACB = 45°</span>
+                        </div>
+                        <canvas id="canvasCircleAngles" width="380" height="240" class="bg-white rounded-lg border border-slate-200 shadow-inner w-full max-w-[380px] h-[240px] cursor-grab active:cursor-grabbing"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: CÁC ĐƯỜNG ĐẶC BIỆT -->
+        <section id="sec-lines" class="content-section space-y-6">
+            <div class="flex items-center space-x-3 border-b border-slate-200 pb-3">
+                <div class="p-2 bg-amber-100 text-amber-600 rounded-lg">
+                    <i class="fa-solid fa-bezier-curve text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">2. Các Đường Đặc Biệt Trong Tam Giác & Đường Tròn</h2>
+                    <p class="text-xs text-slate-500">Phân giác, Trung trực, Trung tuyến, Đường cao, Tiếp tuyến, Đường trung bình, Đường Euler...</p>
+                </div>
+            </div>
+
+            <!-- Card: Bốn đường đồng quy trong tam giác -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition card-item" data-keywords="đường trung tuyến đường phân giác đường trung trực đường cao trọng tâm trực tâm tâm ngoại tiếp nội tiếp">
+                <div class="p-5 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-amber-100 text-amber-700 text-xs font-bold px-2.5 py-0.5 rounded">Tam Giác</span>
+                            <h3 class="font-bold text-lg text-slate-800">4 Đường Đồng Quy Trong Tam Giác</h3>
+                        </div>
+                        <div class="text-xs text-slate-600 space-y-2 math-text">
+                            <div class="p-2.5 rounded-lg border border-red-200 bg-red-50/50">
+                                <span class="font-bold text-red-600">1. Đường Phân Giác:</span> Chia đôi góc đỉnh. Ba đường cắt nhau tại **Tâm đường tròn nội tiếp (I)** (khoảng cách đến 3 cạnh bằng nhau = r).
+                            </div>
+                            <div class="p-2.5 rounded-lg border border-blue-200 bg-blue-50/50">
+                                <span class="font-bold text-blue-600">2. Đường Trung Trực:</span> Vuông góc tại trung điểm cạnh. Ba đường cắt nhau tại **Tâm đường tròn ngoại tiếp (O)** (OA = OB = OC = R).
+                            </div>
+                            <div class="p-2.5 rounded-lg border border-emerald-200 bg-emerald-50/50">
+                                <span class="font-bold text-emerald-600">3. Đường Trung Tuyến:</span> Nối đỉnh tới trung điểm cạnh đối diện. Cắt nhau tại **Trọng tâm (G)** (AG = ⅔ AM).
+                            </div>
+                            <div class="p-2.5 rounded-lg border border-purple-200 bg-purple-50/50">
+                                <span class="font-bold text-purple-600">4. Đường Cao:</span> Kẻ vuông góc từ đỉnh xuống cạnh đối diện. Cắt nhau tại **Trực tâm (H)**.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-7 flex flex-col items-center justify-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="w-full flex flex-wrap justify-between items-center gap-2 mb-3">
+                            <div class="flex flex-wrap gap-1" id="lineTypeSelector">
+                                <button data-type="bisector" class="line-tab text-xs px-2.5 py-1 rounded bg-red-600 text-white font-medium shadow-sm">Phân Giác (I)</button>
+                                <button data-type="perpendicular" class="line-tab text-xs px-2.5 py-1 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 font-medium">Trung Trực (O)</button>
+                                <button data-type="median" class="line-tab text-xs px-2.5 py-1 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 font-medium">Trung Tuyến (G)</button>
+                                <button data-type="altitude" class="line-tab text-xs px-2.5 py-1 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 font-medium">Đường Cao (H)</button>
+                                <button data-type="euler" class="line-tab text-xs px-2.5 py-1 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 font-medium">Đường Euler (H-G-O)</button>
+                            </div>
+                            <span class="text-xs text-slate-500"><i class="fa-solid fa-hand-pointer mr-1"></i>Kéo đỉnh A, B, C</span>
+                        </div>
+                        <canvas id="canvasTriangleLines" width="400" height="260" class="bg-white rounded-lg border border-slate-200 shadow-inner w-full max-w-[400px] h-[260px] cursor-grab active:cursor-grabbing"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Tiếp tuyến & Tính chất tiếp tuyến -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition card-item" data-keywords="đường tiếp tuyến tiếp điểm hai tiếp tuyến cắt nhau vuông góc bán kính">
+                <div class="p-5 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-6 space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2.5 py-0.5 rounded">Đường Tròn</span>
+                            <h3 class="font-bold text-lg text-slate-800">Đường Tiếp Tuyến Của Đường Tròn</h3>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed">Đường thẳng tiếp xúc với đường tròn (⊙O) tại duy nhất một tiếp điểm A.</p>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm space-y-2 math-text">
+                            <p><strong>Tính chất 1:</strong> Tiếp tuyến vuông góc với bán kính tại tiếp điểm: d ⊥ OA tại A.</p>
+                            <p><strong>Tính chất 2 (Hai tiếp tuyến cắt nhau từ P đến A và B):</strong></p>
+                            <ul class="list-disc list-inside text-xs text-slate-600 pl-2 space-y-1">
+                                <li>Khoảng cách bằng nhau: PA = PB</li>
+                                <li>PO là tia phân giác của ∠APB</li>
+                                <li>OP là tia phân giác của ∠AOB</li>
+                                <li>Đoạn PO ⊥ AB tại trung điểm của AB</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-6 flex flex-col items-center justify-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-hand-pointer mr-1"></i>Kéo điểm P ra xa/gần</span>
+                            <span class="text-xs font-bold text-orange-600 math-text">PA = PB</span>
+                        </div>
+                        <canvas id="canvasTangent" width="380" height="240" class="bg-white rounded-lg border border-slate-200 shadow-inner w-full max-w-[380px] h-[240px] cursor-grab active:cursor-grabbing"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CÁC ĐỊNH LÝ KINHI ĐIỂN -->
+        <section id="sec-theorems" class="content-section space-y-6">
+            <div class="flex items-center space-x-3 border-b border-slate-200 pb-3">
+                <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
+                    <i class="fa-solid fa-award text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">3. Các Định Lý Hình Học Phẳng Kinh Điển</h2>
+                    <p class="text-xs text-slate-500">Thales, Pitago, Euclid, Ceva, Menelaus, Ptolemy, Stewart, Heron, Miquel...</p>
+                </div>
+            </div>
+
+            <!-- Card: Định lý Thales -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition card-item" data-keywords="định lý thales talet tỉ lệ song song đảo thuận">
+                <div class="p-5 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-6 space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded">Tỉ Lệ Đoạn Thẳng</span>
+                            <h3 class="font-bold text-lg text-slate-800">Định Lý Thales (Talét)</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">Nếu một đường thẳng song song với một cạnh của tam giác và cắt hai cạnh còn lại thì nó định ra trên hai cạnh đó những đoạn thẳng tương ứng tỉ lệ.</p>
+                        <div class="p-3 bg-emerald-50/60 rounded-lg border border-emerald-200 text-sm math-text">
+                            <p class="font-bold text-emerald-900">Nếu MN ∥ BC (M ∈ AB, N ∈ AC) thì:</p>
+                            <p class="text-center font-bold text-base py-1 text-emerald-800">AM / AB = AN / AC = MN / BC</p>
+                            <p class="text-xs text-emerald-800 mt-1"><strong>Thales Đảo:</strong> Nếu AM / MB = AN / NC thì MN ∥ BC.</p>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-6 flex flex-col items-center justify-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-sliders mr-1"></i>Thay đổi vị trí đoạn MN</span>
+                            <span id="thalesRatioVal" class="text-xs font-bold text-emerald-600 math-text">AM / AB = 0.50</span>
+                        </div>
+                        <canvas id="canvasThales" width="380" height="220" class="bg-white rounded-lg border border-slate-200 shadow-inner w-full max-w-[380px] h-[220px]"></canvas>
+                        <div class="w-full max-w-[380px] mt-3 flex items-center space-x-2">
+                            <label class="text-xs text-slate-500 whitespace-nowrap">Vị trí MN:</label>
+                            <input type="range" id="sliderThales" min="0.15" max="0.85" step="0.01" value="0.5" class="w-full accent-emerald-600">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Định lý Pitago & Hệ thức lượng Euclid -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition card-item" data-keywords="định lý pitago pythagoras euclid hệ thức lượng tam giác vuông cạnh huyền đường cao">
+                <div class="p-5 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-6 space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded">Tam Giác Vuông</span>
+                            <h3 class="font-bold text-lg text-slate-800">Định Lý Pitago & Hệ Thức Lượng Euclid</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">Trong △ABC vuông tại A, đường cao AH (cạnh a, b, c; chiếu b', c'; đường cao h):</p>
+                        <div class="p-3 bg-blue-50/60 rounded-lg border border-blue-200 text-xs space-y-1.5 math-text">
+                            <p class="font-bold text-blue-900 text-sm text-center">Pitago: a² = b² + c²</p>
+                            <div class="grid grid-cols-2 gap-1 pt-1 text-slate-700">
+                                <p>• b² = a · b'</p>
+                                <p>• c² = a · c'</p>
+                                <p>• h² = b' · c'</p>
+                                <p>• a · h = b · c</p>
+                                <p class="col-span-2">• 1 / h² = 1 / b² + 1 / c²</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-6 flex flex-col items-center justify-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-hand-pointer mr-1"></i>Kéo 2 cạnh góc vuông A, B</span>
+                            <span id="pythagorasCalc" class="text-xs font-bold text-blue-600 math-text">3² + 4² = 5²</span>
+                        </div>
+                        <canvas id="canvasPythagoras" width="380" height="220" class="bg-white rounded-lg border border-slate-200 shadow-inner w-full max-w-[380px] h-[220px] cursor-grab active:cursor-grabbing"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Định lý Ptolemy (Tứ giác nội tiếp) -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition card-item" data-keywords="định lý ptolemy ptoleme tứ giác nội tiếp tích hai đường chéo">
+                <div class="p-5 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-6 space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-rose-100 text-rose-700 text-xs font-bold px-2.5 py-0.5 rounded">Tứ Giác Nội Tiếp</span>
+                            <h3 class="font-bold text-lg text-slate-800">Định Lý Ptolemy (Ptolémée)</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">Trong một tứ giác nội tiếp đường tròn, tích hai đường chéo bằng tổng tích các cặp cạnh đối diện.</p>
+                        <div class="p-3 bg-rose-50/60 rounded-lg border border-rose-200 text-sm math-text">
+                            <p class="font-bold text-rose-900 text-center text-base">AC · BD = AB · CD + AD · BC</p>
+                            <p class="text-xs text-rose-800 mt-2"><strong>Bất đẳng thức Ptolemy (Tứ giác bất kỳ):</strong> AC · BD ≤ AB · CD + AD · BC. Dấu "=" xảy ra khi và chỉ khi tứ giác nội tiếp.</p>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-6 flex flex-col items-center justify-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-hand-pointer mr-1"></i>Kéo các đỉnh A, B, C, D</span>
+                            <span id="ptolemyVal" class="text-xs font-bold text-rose-600 math-text">AC · BD = AB · CD + AD · BC</span>
+                        </div>
+                        <canvas id="canvasPtolemy" width="380" height="230" class="bg-white rounded-lg border border-slate-200 shadow-inner w-full max-w-[380px] h-[230px] cursor-grab active:cursor-grabbing"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Định lý Ceva & Menelaus -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition card-item" data-keywords="định lý ceva menelaus đồng quy thẳng hàng">
+                <div class="p-5 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-6 space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-purple-100 text-purple-700 text-xs font-bold px-2.5 py-0.5 rounded">Hình Học Nâng Cao</span>
+                            <h3 class="font-bold text-lg text-slate-800">Định Lý Ceva & Menelaus</h3>
+                        </div>
+                        <div class="space-y-3 text-xs text-slate-600 math-text">
+                            <div class="p-2.5 rounded-lg border border-purple-200 bg-purple-50/30">
+                                <p class="font-bold text-purple-800 text-sm">1. Định Lý Ceva (Đồng quy):</p>
+                                <p class="mt-1">Cho D, E, F thuộc cạnh BC, CA, AB. Ba đường AD, BE, CF đồng quy khi và chỉ khi:</p>
+                                <p class="text-center font-bold text-purple-900 text-sm my-1">(AF / FB) · (BD / DC) · (CE / EA) = 1</p>
+                            </div>
+                            <div class="p-2.5 rounded-lg border border-pink-200 bg-pink-50/30">
+                                <p class="font-bold text-pink-800 text-sm">2. Định Lý Menelaus (Thẳng hàng):</p>
+                                <p class="mt-1">Cát tuyến cắt BC, CA, AB (hoặc kéo dài) tại D, E, F. Ba điểm D, E, F thẳng hàng khi và chỉ khi:</p>
+                                <p class="text-center font-bold text-pink-900 text-sm my-1">(AF / FB) · (BD / DC) · (CE / EA) = 1</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-6 flex flex-col items-center justify-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <div class="flex space-x-1" id="cevaMenelausToggle">
+                                <button data-mode="ceva" class="cm-tab text-xs px-2.5 py-1 rounded bg-purple-600 text-white font-medium shadow-sm">Ceva (Đồng Quy)</button>
+                                <button data-mode="menelaus" class="cm-tab text-xs px-2.5 py-1 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 font-medium">Menelaus (Thẳng Hàng)</button>
+                            </div>
+                        </div>
+                        <canvas id="canvasCevaMenelaus" width="380" height="240" class="bg-white rounded-lg border border-slate-200 shadow-inner w-full max-w-[380px] h-[240px] cursor-grab active:cursor-grabbing"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid Card Summary: Các định lý quan trọng khác -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Định lý Heron & Stewart -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2 card-item" data-keywords="định lý heron stewart diện tích độ dài đường chevian">
+                    <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                        <i class="fa-solid fa-calculator text-emerald-500 mr-2"></i> Định Lý Heron & Stewart
+                    </h4>
+                    <div class="text-xs text-slate-600 space-y-2 math-text">
+                        <p><strong>Heron (Diện tích △):</strong> S = √( p(p - a)(p - b)(p - c) ) với nửa chu vi p = ½ (a + b + c).</p>
+                        <p><strong>Stewart (Đường Chevian d):</strong> b²m + c²n = a(d² + mn) (với d cắt cạnh a thành 2 đoạn m và n).</p>
+                    </div>
+                </div>
+
+                <!-- Định lý Hàm Sin & Cosin -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2 card-item" data-keywords="định lý cosin sin hàm cos sin bán kính ngoại tiếp">
+                    <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                        <i class="fa-solid fa-wave-square text-sky-500 mr-2"></i> Định Lý Sin & Cosin
+                    </h4>
+                    <div class="text-xs text-slate-600 space-y-2 math-text">
+                        <p><strong>Định lý Cosin:</strong> a² = b² + c² - 2bc · cos A.</p>
+                        <p><strong>Định lý Sin:</strong> a / sin A = b / sin B = c / sin C = 2R (R là bán kính đường tròn ngoại tiếp).</p>
+                    </div>
+                </div>
+
+                <!-- Định lý Miquel & Simson -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2 card-item" data-keywords="định lý miquel simson đường thẳng simson tam giác">
+                    <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                        <i class="fa-solid fa-circle-nodes text-purple-500 mr-2"></i> Định Lý Simson & Miquel
+                    </h4>
+                    <div class="text-xs text-slate-600 space-y-2 math-text">
+                        <p><strong>Đường thẳng Simson:</strong> Hình chiếu vuông góc của điểm P trên (⊙O) xuống 3 cạnh của △ABC thẳng hàng.</p>
+                        <p><strong>Điểm Miquel:</strong> Cho 4 đường thẳng cắt nhau tạo thành 4 tam giác, 4 đường tròn ngoại tiếp đồng quy tại 1 điểm Miquel.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: KHÁI NIỆM & DẤU HIỆU NHẬN BIẾT -->
+        <section id="sec-concepts" class="content-section space-y-6">
+            <div class="flex items-center space-x-3 border-b border-slate-200 pb-3">
+                <div class="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                    <i class="fa-solid fa-draw-polygon text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">4. Khái Niệm, Dấu Hiệu Nhận Biết & Tam Giác Đồng Dạng</h2>
+                    <p class="text-xs text-slate-500">Tứ giác nội tiếp, tam giác bằng nhau/đồng dạng, đường tròn Euler 9 điểm</p>
+                </div>
+            </div>
+
+            <!-- Card: Tứ giác nội tiếp -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition card-item" data-keywords="tứ giác nội tiếp dấu hiệu nhận biết tổng hai góc đối 180 góc ngoài bằng góc đối trong">
+                <div class="p-5 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-6 space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-purple-100 text-purple-700 text-xs font-bold px-2.5 py-0.5 rounded">Tứ Giác Nội Tiếp</span>
+                            <h3 class="font-bold text-lg text-slate-800">Dấu Hiệu Nhận Biết Tứ Giác Nội Tiếp</h3>
+                        </div>
+                        <p class="text-sm text-slate-600">Tứ giác ABCD có 4 đỉnh cùng thuộc một đường tròn (⊙O).</p>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs space-y-2 text-slate-700 math-text">
+                            <p class="font-bold text-slate-800">4 Dấu hiệu nhận biết cơ bản:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>1. Tổng hai góc đối:</strong> ∠A + ∠C = 180° hoặc ∠B + ∠D = 180°.</li>
+                                <li><strong>2. Góc ngoài bằng góc đối trong:</strong> Góc ngoài tại C bằng ∠A.</li>
+                                <li><strong>3. Hai đỉnh kề nhau cùng nhìn 1 cạnh:</strong> ∠ABD = ∠ACD (cùng nhìn cạnh AD).</li>
+                                <li><strong>4. Cách đều một điểm:</strong> OA = OB = OC = OD.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-6 flex flex-col items-center justify-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold text-slate-500"><i class="fa-solid fa-hand-pointer mr-1"></i>Kéo đỉnh A, B, C, D trên vòng tròn</span>
+                            <span id="cyclicQuadSum" class="text-xs font-bold text-purple-600 math-text">∠A + ∠C = 180°</span>
+                        </div>
+                        <canvas id="canvasCyclicQuad" width="380" height="240" class="bg-white rounded-lg border border-slate-200 shadow-inner w-full max-w-[380px] h-[240px] cursor-grab active:cursor-grabbing"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Table for Tam Giác Đồng Dạng & Đường Tròn Euler -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-2 card-item" data-keywords="tam giác đồng dạng bằng nhau cạnh góc cạnh">
+                    <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                        <i class="fa-solid fa-clone text-sky-500 mr-2"></i> Tam Giác Đồng Dạng (∽) & Bằng Nhau (≅)
+                    </h4>
+                    <div class="text-xs text-slate-600 space-y-2 math-text leading-relaxed">
+                        <p><strong>Tam Giác Bằng Nhau (△ABC ≅ △A'B'C'):</strong></p>
+                        <p class="pl-2">• c-c-c | c-g-c | g-c-g (Vuông: Cạnh huyền-góc nhọn, Cạnh huyền-cạnh góc vuông).</p>
+                        <p><strong>Tam Giác Đồng Dạng (△ABC ∽ △A'B'C'):</strong></p>
+                        <p class="pl-2">• g-g (2 góc tương ứng bằng nhau)</p>
+                        <p class="pl-2">• c-g-c (Tỉ lệ 2 cạnh và góc kẹp giữa bằng nhau)</p>
+                        <p class="pl-2">• c-c-c (Tỉ lệ 3 cạnh tương ứng bằng nhau: AB/A'B' = AC/A'C' = BC/B'C')</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-2 card-item" data-keywords="đường tròn euler 9 điểm euler chín điểm trực tâm trung điểm">
+                    <h4 class="font-bold text-slate-800 text-sm flex items-center">
+                        <i class="fa-solid fa-circle text-indigo-500 mr-2"></i> Đường Tròn Euler (9 Điểm)
+                    </h4>
+                    <div class="text-xs text-slate-600 space-y-1.5 math-text leading-relaxed">
+                        <p>Đường tròn Euler đi qua <strong>9 điểm đặc biệt</strong> của △ABC:</p>
+                        <p class="pl-2">• 3 Trung điểm của 3 cạnh tam giác.</p>
+                        <p class="pl-2">• 3 Chân đường cao kẻ từ các đỉnh.</p>
+                        <p class="pl-2">• 3 Trung điểm của các đoạn thẳng nối Trực tâm H tới các đỉnh A, B, C.</p>
+                        <p class="text-indigo-700 font-semibold mt-1">• Bán kính đường tròn Euler bằng ½ Bán kính ngoại tiếp R.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Canvas Interactive Engine Script -->
+    <script>
+        // --- HELPER MATH & CANVAS UTILS ---
+        const MathUtils = {
+            dist: (p1, p2) => Math.hypot(p2.x - p1.x, p2.y - p1.y),
+            angle: (p1, p2) => Math.atan2(p2.y - p1.y, p2.x - p1.x),
+            // Intersection of line (p1-p2) and line (p3-p4)
+            intersectLines: (p1, p2, p3, p4) => {
+                const denom = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+                if (Math.abs(denom) < 1e-6) return null;
+                const t = ((p1.x - p3.x) * (p3.y - p4.y) - (p1.y - p3.y) * (p3.x - p4.x)) / denom;
+                return {
+                    x: p1.x + t * (p2.x - p1.x),
+                    y: p1.y + t * (p2.y - p1.y)
+                };
+            },
+            // Draw Point
+            drawPoint: (ctx, p, name = "", color = "#0284c7", radius = 5) => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                if (name) {
+                    ctx.fillStyle = "#1e293b";
+                    ctx.font = "bold 13px sans-serif";
+                    const offset = 12;
+                    ctx.fillText(name, p.x + offset, p.y - 5);
+                }
+            },
+            // Draw Line Segment
+            drawLine: (ctx, p1, p2, color = "#64748b", width = 2, dash = []) => {
+                ctx.save();
+                ctx.beginPath();
+                ctx.setLineDash(dash);
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width;
+                ctx.stroke();
+                ctx.restore();
+            },
+            // Draw Right Angle Indicator
+            drawRightAngle: (ctx, A, B, C, size = 10) => {
+                const v1 = { x: A.x - B.x, y: A.y - B.y };
+                const v2 = { x: C.x - B.x, y: C.y - B.y };
+                const len1 = Math.hypot(v1.x, v1.y);
+                const len2 = Math.hypot(v2.x, v2.y);
+                if(len1 === 0 || len2 === 0) return;
+                const u1 = { x: (v1.x / len1) * size, y: (v1.y / len1) * size };
+                const u2 = { x: (v2.x / len2) * size, y: (v2.y / len2) * size };
+
+                ctx.beginPath();
+                ctx.moveTo(B.x + u1.x, B.y + u1.y);
+                ctx.lineTo(B.x + u1.x + u2.x, B.y + u1.y + u2.y);
+                ctx.lineTo(B.x + u2.x, B.y + u2.y);
+                ctx.strokeStyle = "#ef4444";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+        };
+
+        // --- INTERACTIVE CANVAS MANAGERS ---
+
+        // 1. PARALLEL LINES & ANGLES CANVAS
+        const initParallelCanvas = () => {
+            const canvas = document.getElementById('canvasParallel');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const slider = document.getElementById('sliderParallelAngle');
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const angleDeg = parseFloat(slider.value);
+                const rad = (angleDeg * Math.PI) / 180;
+
+                const y1 = 70, y2 = 150;
+                MathUtils.drawLine(ctx, {x: 30, y: y1}, {x: 350, y: y1}, "#0284c7", 2.5);
+                MathUtils.drawLine(ctx, {x: 30, y: y2}, {x: 350, y: y2}, "#0284c7", 2.5);
+
+                ctx.fillStyle = "#0284c7";
+                ctx.font = "bold 12px sans-serif";
+                ctx.fillText("đường a", 310, y1 - 8);
+                ctx.fillText("đường b", 310, y2 + 18);
+
+                const cx = 190, cy = (y1 + y2) / 2;
+                const len = 110;
+                const dx = Math.cos(rad) * len;
+                const dy = Math.sin(rad) * len;
+
+                const p1 = { x: cx - dx, y: cy - dy };
+                const p2 = { x: cx + dx, y: cy + dy };
+                MathUtils.drawLine(ctx, p1, p2, "#f59e0b", 2.5);
+
+                const A = MathUtils.intersectLines({x: 30, y: y1}, {x: 350, y: y1}, p1, p2);
+                const B = MathUtils.intersectLines({x: 30, y: y2}, {x: 350, y: y2}, p1, p2);
+
+                if(A && B) {
+                    MathUtils.drawPoint(ctx, A, "A", "#0284c7", 4);
+                    MathUtils.drawPoint(ctx, B, "B", "#0284c7", 4);
+
+                    const angTrans = Math.atan2(B.y - A.y, B.x - A.x);
+                    
+                    // Arc A1
+                    ctx.beginPath();
+                    ctx.arc(A.x, A.y, 22, 0, angTrans);
+                    ctx.fillStyle = "rgba(239, 68, 68, 0.25)";
+                    ctx.fill();
+                    ctx.strokeStyle = "#ef4444";
+                    ctx.stroke();
+
+                    // Arc B3
+                    ctx.beginPath();
+                    ctx.arc(B.x, B.y, 22, Math.PI, Math.PI + angTrans);
+                    ctx.fillStyle = "rgba(239, 68, 68, 0.25)";
+                    ctx.fill();
+                    ctx.strokeStyle = "#ef4444";
+                    ctx.stroke();
+
+                    ctx.fillStyle = "#ef4444";
+                    ctx.font = "bold 11px sans-serif";
+                    ctx.fillText("∠A₁", A.x + 25, A.y + 12);
+                    ctx.fillText("∠B₃ (So le trong)", B.x - 95, B.y - 8);
+                }
+            }
+
+            slider.addEventListener('input', draw);
+            draw();
+        };
+
+        // 2. CIRCLE ANGLES CANVAS
+        const initCircleAnglesCanvas = () => {
+            const canvas = document.getElementById('canvasCircleAngles');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const O = { x: 190, y: 120 };
+            const R = 80;
+
+            let angleC = -Math.PI / 2;
+            const angleA = Math.PI * 0.75;
+            const angleB = Math.PI * 0.25;
+
+            const getPoint = (ang) => ({ x: O.x + R * Math.cos(ang), y: O.y + R * Math.sin(ang) });
+
+            let dragging = false;
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const A = getPoint(angleA);
+                const B = getPoint(angleB);
+                const C = getPoint(angleC);
+
+                ctx.beginPath();
+                ctx.arc(O.x, O.y, R, 0, Math.PI * 2);
+                ctx.strokeStyle = "#cbd5e1";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                MathUtils.drawLine(ctx, O, A, "#94a3b8", 1.5, [4, 4]);
+                MathUtils.drawLine(ctx, O, B, "#94a3b8", 1.5, [4, 4]);
+
+                MathUtils.drawLine(ctx, C, A, "#0284c7", 2.5);
+                MathUtils.drawLine(ctx, C, B, "#0284c7", 2.5);
+
+                ctx.beginPath();
+                ctx.arc(O.x, O.y, R, angleB, angleA);
+                ctx.strokeStyle = "#ef4444";
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                MathUtils.drawPoint(ctx, O, "O", "#64748b", 4);
+                MathUtils.drawPoint(ctx, A, "A", "#1e293b", 4);
+                MathUtils.drawPoint(ctx, B, "B", "#1e293b", 4);
+                MathUtils.drawPoint(ctx, C, "C (Kéo rê)", "#0284c7", 6);
+
+                const inscribedDeg = Math.round(((angleA - angleB) * 180 / Math.PI) / 2);
+                const label = document.getElementById('circleAngleVal');
+                if(label) label.textContent = `∠ACB = ${inscribedDeg}° (Bằng ½ ∠AOB = 45°)`;
+            }
+
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mouseP = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                if (MathUtils.dist(mouseP, getPoint(angleC)) < 15) dragging = true;
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                const rect = canvas.getBoundingClientRect();
+                angleC = Math.atan2((e.clientY - rect.top) - O.y, (e.clientX - rect.left) - O.x);
+                draw();
+            });
+
+            window.addEventListener('mouseup', () => dragging = false);
+
+            draw();
+        };
+
+        // 3. TRIANGLE SPECIAL LINES & EULER CANVAS
+        const initTriangleLinesCanvas = () => {
+            const canvas = document.getElementById('canvasTriangleLines');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let lineType = "bisector";
+
+            let A = { x: 200, y: 40 };
+            let B = { x: 70, y: 220 };
+            let C = { x: 330, y: 220 };
+
+            let dragTarget = null;
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                MathUtils.drawLine(ctx, A, B, "#334155", 2);
+                MathUtils.drawLine(ctx, B, C, "#334155", 2);
+                MathUtils.drawLine(ctx, C, A, "#334155", 2);
+
+                if (lineType === "bisector") {
+                    const drawBisector = (P1, P2, P3, label) => {
+                        const d12 = MathUtils.dist(P1, P2);
+                        const d13 = MathUtils.dist(P1, P3);
+                        const D = {
+                            x: (d13 * P2.x + d12 * P3.x) / (d12 + d13),
+                            y: (d13 * P2.y + d12 * P3.y) / (d12 + d13)
+                        };
+                        MathUtils.drawLine(ctx, P1, D, "#ef4444", 2);
+                        MathUtils.drawPoint(ctx, D, label, "#ef4444", 3);
+                    };
+                    drawBisector(A, B, C, "D");
+                    drawBisector(B, A, C, "E");
+                    drawBisector(C, A, B, "F");
+
+                } else if (lineType === "median") {
+                    const M_BC = { x: (B.x + C.x) / 2, y: (B.y + C.y) / 2 };
+                    const M_AC = { x: (A.x + C.x) / 2, y: (A.y + C.y) / 2 };
+                    const M_AB = { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 };
+
+                    MathUtils.drawLine(ctx, A, M_BC, "#10b981", 2);
+                    MathUtils.drawLine(ctx, B, M_AC, "#10b981", 2);
+                    MathUtils.drawLine(ctx, C, M_AB, "#10b981", 2);
+
+                    const G = { x: (A.x + B.x + C.x) / 3, y: (A.y + B.y + C.y) / 3 };
+                    MathUtils.drawPoint(ctx, G, "G (Trọng tâm)", "#047857", 5);
+
+                } else if (lineType === "altitude") {
+                    const getFoot = (P, P1, P2) => {
+                        const dx = P2.x - P1.x;
+                        const dy = P2.y - P1.y;
+                        const u = ((P.x - P1.x) * dx + (P.y - P1.y) * dy) / (dx * dx + dy * dy);
+                        return { x: P1.x + u * dx, y: P1.y + u * dy };
+                    };
+                    const H_A = getFoot(A, B, C);
+                    const H_B = getFoot(B, A, C);
+
+                    MathUtils.drawLine(ctx, A, H_A, "#8b5cf6", 2);
+                    MathUtils.drawLine(ctx, B, H_B, "#8b5cf6", 2);
+                    MathUtils.drawRightAngle(ctx, A, H_A, C, 8);
+
+                } else if (lineType === "euler") {
+                    // Centroid G
+                    const G = { x: (A.x + B.x + C.x) / 3, y: (A.y + B.y + C.y) / 3 };
+
+                    // Orthocenter H
+                    const getFoot = (P, P1, P2) => {
+                        const dx = P2.x - P1.x;
+                        const dy = P2.y - P1.y;
+                        const u = ((P.x - P1.x) * dx + (P.y - P1.y) * dy) / (dx * dx + dy * dy);
+                        return { x: P1.x + u * dx, y: P1.y + u * dy };
+                    };
+                    const HA = getFoot(A, B, C);
+                    const HB = getFoot(B, A, C);
+                    const H = MathUtils.intersectLines(A, HA, B, HB) || {x:200, y:120};
+
+                    // Circumcenter O
+                    const O = { x: 3 * G.x / 2 - H.x / 2, y: 3 * G.y / 2 - H.y / 2 };
+
+                    // Euler Line (H - G - O)
+                    MathUtils.drawLine(ctx, H, O, "#ec4899", 2.5);
+
+                    MathUtils.drawPoint(ctx, H, "H (Trực tâm)", "#8b5cf6", 5);
+                    MathUtils.drawPoint(ctx, G, "G (Trọng tâm)", "#10b981", 5);
+                    MathUtils.drawPoint(ctx, O, "O (Tâm ngoại)", "#3b82f6", 5);
+                }
+
+                MathUtils.drawPoint(ctx, A, "A", "#0284c7", 6);
+                MathUtils.drawPoint(ctx, B, "B", "#0284c7", 6);
+                MathUtils.drawPoint(ctx, C, "C", "#0284c7", 6);
+            }
+
+            document.querySelectorAll('#lineTypeSelector button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('#lineTypeSelector button').forEach(b => {
+                        b.className = "line-tab text-xs px-2.5 py-1 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 font-medium";
+                    });
+                    e.target.className = "line-tab text-xs px-2.5 py-1 rounded bg-sky-600 text-white font-medium shadow-sm";
+                    lineType = e.target.dataset.type;
+                    draw();
+                });
+            });
+
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const m = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                if (MathUtils.dist(m, A) < 15) dragTarget = A;
+                else if (MathUtils.dist(m, B) < 15) dragTarget = B;
+                else if (MathUtils.dist(m, C) < 15) dragTarget = C;
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (!dragTarget) return;
+                const rect = canvas.getBoundingClientRect();
+                dragTarget.x = e.clientX - rect.left;
+                dragTarget.y = e.clientY - rect.top;
+                draw();
+            });
+
+            window.addEventListener('mouseup', () => dragTarget = null);
+
+            draw();
+        };
+
+        // 4. TANGENT CANVAS
+        const initTangentCanvas = () => {
+            const canvas = document.getElementById('canvasTangent');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const O = { x: 150, y: 120 };
+            const R = 60;
+            let P = { x: 310, y: 120 };
+
+            let dragging = false;
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Circle O
+                ctx.beginPath();
+                ctx.arc(O.x, O.y, R, 0, Math.PI * 2);
+                ctx.strokeStyle = "#64748b";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                const d = MathUtils.dist(O, P);
+                if (d > R) {
+                    const angleOP = Math.atan2(P.y - O.y, P.x - O.x);
+                    const alpha = Math.acos(R / d);
+
+                    const A = { x: O.x + R * Math.cos(angleOP - alpha), y: O.y + R * Math.sin(angleOP - alpha) };
+                    const B = { x: O.x + R * Math.cos(angleOP + alpha), y: O.y + R * Math.sin(angleOP + alpha) };
+
+                    MathUtils.drawLine(ctx, P, A, "#f97316", 2);
+                    MathUtils.drawLine(ctx, P, B, "#f97316", 2);
+                    MathUtils.drawLine(ctx, O, A, "#94a3b8", 1.5, [3, 3]);
+                    MathUtils.drawLine(ctx, O, B, "#94a3b8", 1.5, [3, 3]);
+                    MathUtils.drawLine(ctx, O, P, "#cbd5e1", 1.5, [4, 4]);
+
+                    MathUtils.drawRightAngle(ctx, P, A, O, 8);
+                    MathUtils.drawRightAngle(ctx, P, B, O, 8);
+
+                    MathUtils.drawPoint(ctx, A, "A", "#ea580c", 4);
+                    MathUtils.drawPoint(ctx, B, "B", "#ea580c", 4);
+                }
+
+                MathUtils.drawPoint(ctx, O, "O", "#64748b", 5);
+                MathUtils.drawPoint(ctx, P, "P (Kéo rê)", "#f97316", 6);
+            }
+
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const m = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                if (MathUtils.dist(m, P) < 15) dragging = true;
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                const rect = canvas.getBoundingClientRect();
+                P.x = Math.max(O.x + R + 15, Math.min(360, e.clientX - rect.left));
+                P.y = Math.max(30, Math.min(210, e.clientY - rect.top));
+                draw();
+            });
+
+            window.addEventListener('mouseup', () => dragging = false);
+
+            draw();
+        };
+
+        // 5. THALES CANVAS
+        const initThalesCanvas = () => {
+            const canvas = document.getElementById('canvasThales');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const slider = document.getElementById('sliderThales');
+
+            const A = { x: 190, y: 35 };
+            const B = { x: 60, y: 195 };
+            const C = { x: 320, y: 195 };
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const k = parseFloat(slider.value);
+
+                const M = { x: A.x + k * (B.x - A.x), y: A.y + k * (B.y - A.y) };
+                const N = { x: A.x + k * (C.x - A.x), y: A.y + k * (C.y - A.y) };
+
+                MathUtils.drawLine(ctx, A, B, "#334155", 2);
+                MathUtils.drawLine(ctx, B, C, "#334155", 2);
+                MathUtils.drawLine(ctx, C, A, "#334155", 2);
+
+                MathUtils.drawLine(ctx, M, N, "#10b981", 3);
+                MathUtils.drawLine(ctx, A, M, "#ef4444", 3);
+
+                MathUtils.drawPoint(ctx, A, "A", "#1e293b", 5);
+                MathUtils.drawPoint(ctx, B, "B", "#1e293b", 5);
+                MathUtils.drawPoint(ctx, C, "C", "#1e293b", 5);
+                MathUtils.drawPoint(ctx, M, "M", "#10b981", 5);
+                MathUtils.drawPoint(ctx, N, "N", "#10b981", 5);
+
+                const label = document.getElementById('thalesRatioVal');
+                if(label) label.textContent = `Tỉ lệ AM / AB = AN / AC = ${k.toFixed(2)}`;
+            }
+
+            slider.addEventListener('input', draw);
+            draw();
+        };
+
+        // 6. PYTHAGORAS CANVAS
+        const initPythagorasCanvas = () => {
+            const canvas = document.getElementById('canvasPythagoras');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const C = { x: 120, y: 170 };
+            let A = { x: 120, y: 70 };
+            let B = { x: 260, y: 170 };
+
+            let dragTarget = null;
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const b = Math.abs(C.y - A.y);
+                const a = Math.abs(B.x - C.x);
+                const c = Math.hypot(a, b);
+
+                MathUtils.drawLine(ctx, A, B, "#3b82f6", 3);
+                MathUtils.drawLine(ctx, B, C, "#64748b", 2);
+                MathUtils.drawLine(ctx, C, A, "#64748b", 2);
+
+                MathUtils.drawRightAngle(ctx, A, C, B, 12);
+
+                ctx.fillStyle = "#1e293b";
+                ctx.font = "bold 12px sans-serif";
+                ctx.fillText(`b = ${(b/20).toFixed(1)}`, C.x - 45, (C.y + A.y) / 2);
+                ctx.fillText(`a = ${(a/20).toFixed(1)}`, (C.x + B.x) / 2 - 10, C.y + 20);
+                ctx.fillText(`c = ${(c/20).toFixed(1)}`, (A.x + B.x) / 2 + 10, (A.y + B.y) / 2 - 10);
+
+                MathUtils.drawPoint(ctx, C, "C (90°)", "#ef4444", 5);
+                MathUtils.drawPoint(ctx, A, "A", "#3b82f6", 6);
+                MathUtils.drawPoint(ctx, B, "B", "#3b82f6", 6);
+
+                const calcLabel = document.getElementById('pythagorasCalc');
+                if(calcLabel) {
+                    const a2 = (a/20).toFixed(1);
+                    const b2 = (b/20).toFixed(1);
+                    const c2 = (c/20).toFixed(1);
+                    calcLabel.textContent = `${a2}² + ${b2}² = ${(a2*a2 + b2*b2).toFixed(1)} ≈ ${c2}²`;
+                }
+            }
+
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const m = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                if (MathUtils.dist(m, A) < 15) dragTarget = A;
+                else if (MathUtils.dist(m, B) < 15) dragTarget = B;
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (!dragTarget) return;
+                const rect = canvas.getBoundingClientRect();
+                if (dragTarget === A) {
+                    A.y = Math.min(140, Math.max(30, e.clientY - rect.top));
+                } else if (dragTarget === B) {
+                    B.x = Math.max(160, Math.min(340, e.clientX - rect.left));
+                }
+                draw();
+            });
+
+            window.addEventListener('mouseup', () => dragTarget = null);
+
+            draw();
+        };
+
+        // 7. PTOLEMY CANVAS
+        const initPtolemyCanvas = () => {
+            const canvas = document.getElementById('canvasPtolemy');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const O = { x: 190, y: 115 };
+            const R = 85;
+
+            let angA = -Math.PI * 0.7;
+            let angB = -Math.PI * 0.15;
+            let angC = Math.PI * 0.35;
+            let angD = Math.PI * 0.85;
+
+            const getPoint = (ang) => ({ x: O.x + R * Math.cos(ang), y: O.y + R * Math.sin(ang) });
+            let dragTargetIndex = null;
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const A = getPoint(angA);
+                const B = getPoint(angB);
+                const C = getPoint(angC);
+                const D = getPoint(angD);
+
+                // Circle
+                ctx.beginPath();
+                ctx.arc(O.x, O.y, R, 0, Math.PI * 2);
+                ctx.strokeStyle = "#cbd5e1";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Quadrilateral Sides
+                MathUtils.drawLine(ctx, A, B, "#e11d48", 2);
+                MathUtils.drawLine(ctx, B, C, "#e11d48", 2);
+                MathUtils.drawLine(ctx, C, D, "#e11d48", 2);
+                MathUtils.drawLine(ctx, D, A, "#e11d48", 2);
+
+                // Diagonals AC & BD
+                MathUtils.drawLine(ctx, A, C, "#2563eb", 2, [4, 4]);
+                MathUtils.drawLine(ctx, B, D, "#2563eb", 2, [4, 4]);
+
+                MathUtils.drawPoint(ctx, A, "A", "#e11d48", 5);
+                MathUtils.drawPoint(ctx, B, "B", "#e11d48", 5);
+                MathUtils.drawPoint(ctx, C, "C", "#e11d48", 5);
+                MathUtils.drawPoint(ctx, D, "D", "#e11d48", 5);
+
+                const ab = MathUtils.dist(A, B) / 20, bc = MathUtils.dist(B, C) / 20;
+                const cd = MathUtils.dist(C, D) / 20, da = MathUtils.dist(D, A) / 20;
+                const ac = MathUtils.dist(A, C) / 20, bd = MathUtils.dist(B, D) / 20;
+
+                const left = (ac * bd).toFixed(1);
+                const right = (ab * cd + ad_calc(da, bc)).toFixed(1);
+
+                function ad_calc(d1, d2) { return d1 * d2; }
+
+                const valLabel = document.getElementById('ptolemyVal');
+                if(valLabel) valLabel.textContent = `AC · BD (${left}) = AB · CD + AD · BC (${right})`;
+            }
+
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const m = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                const pts = [getPoint(angA), getPoint(angB), getPoint(angC), getPoint(angD)];
+                pts.forEach((pt, idx) => {
+                    if (MathUtils.dist(m, pt) < 15) dragTargetIndex = idx;
+                });
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (dragTargetIndex === null) return;
+                const rect = canvas.getBoundingClientRect();
+                const ang = Math.atan2((e.clientY - rect.top) - O.y, (e.clientX - rect.left) - O.x);
+                if (dragTargetIndex === 0) angA = ang;
+                else if (dragTargetIndex === 1) angB = ang;
+                else if (dragTargetIndex === 2) angC = ang;
+                else if (dragTargetIndex === 3) angD = ang;
+                draw();
+            });
+
+            window.addEventListener('mouseup', () => dragTargetIndex = null);
+
+            draw();
+        };
+
+        // 8. CEVA & MENELAUS CANVAS
+        const initCevaMenelausCanvas = () => {
+            const canvas = document.getElementById('canvasCevaMenelaus');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let mode = "ceva"; // ceva or menelaus
+
+            const A = { x: 190, y: 35 };
+            const B = { x: 60, y: 200 };
+            const C = { x: 320, y: 200 };
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                MathUtils.drawLine(ctx, A, B, "#334155", 2);
+                MathUtils.drawLine(ctx, B, C, "#334155", 2);
+                MathUtils.drawLine(ctx, C, A, "#334155", 2);
+
+                if (mode === "ceva") {
+                    const P = { x: 190, y: 130 }; // Concurrency Point
+
+                    const D = MathUtils.intersectLines(A, P, B, C) || {x: 190, y: 200};
+                    const E = MathUtils.intersectLines(B, P, A, C) || {x: 250, y: 110};
+                    const F = MathUtils.intersectLines(C, P, A, B) || {x: 130, y: 110};
+
+                    MathUtils.drawLine(ctx, A, D, "#9333ea", 2);
+                    MathUtils.drawLine(ctx, B, E, "#9333ea", 2);
+                    MathUtils.drawLine(ctx, C, F, "#9333ea", 2);
+
+                    MathUtils.drawPoint(ctx, P, "P (Đồng quy)", "#9333ea", 5);
+                    MathUtils.drawPoint(ctx, D, "D", "#9333ea", 3.5);
+                    MathUtils.drawPoint(ctx, E, "E", "#9333ea", 3.5);
+                    MathUtils.drawPoint(ctx, F, "F", "#9333ea", 3.5);
+
+                } else {
+                    // Menelaus
+                    const F = { x: 125, y: 117 }; // On AB
+                    const E = { x: 255, y: 117 }; // On AC
+                    const D = { x: 380, y: 200 }; // On BC extended
+
+                    MathUtils.drawLine(ctx, B, D, "#64748b", 1.5, [4, 4]); // BC extension
+                    MathUtils.drawLine(ctx, F, D, "#db2777", 2.5); // Ceva line
+
+                    MathUtils.drawPoint(ctx, D, "D", "#db2777", 4);
+                    MathUtils.drawPoint(ctx, E, "E", "#db2777", 4);
+                    MathUtils.drawPoint(ctx, F, "F", "#db2777", 4);
+                }
+
+                MathUtils.drawPoint(ctx, A, "A", "#1e293b", 5);
+                MathUtils.drawPoint(ctx, B, "B", "#1e293b", 5);
+                MathUtils.drawPoint(ctx, C, "C", "#1e293b", 5);
+            }
+
+            document.querySelectorAll('#cevaMenelausToggle button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('#cevaMenelausToggle button').forEach(b => {
+                        b.className = "cm-tab text-xs px-2.5 py-1 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 font-medium";
+                    });
+                    e.target.className = "cm-tab text-xs px-2.5 py-1 rounded bg-purple-600 text-white font-medium shadow-sm";
+                    mode = e.target.dataset.mode;
+                    draw();
+                });
+            });
+
+            draw();
+        };
+
+        // 9. CYCLIC QUADRILATERAL CANVAS
+        const initCyclicQuadCanvas = () => {
+            const canvas = document.getElementById('canvasCyclicQuad');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const O = { x: 190, y: 120 };
+            const R = 80;
+
+            let angA = -Math.PI * 0.7;
+            let angB = -Math.PI * 0.15;
+            let angC = Math.PI * 0.4;
+            let angD = Math.PI * 0.85;
+
+            const getPoint = (ang) => ({ x: O.x + R * Math.cos(ang), y: O.y + R * Math.sin(ang) });
+            let dragIdx = null;
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const A = getPoint(angA);
+                const B = getPoint(angB);
+                const C = getPoint(angC);
+                const D = getPoint(angD);
+
+                ctx.beginPath();
+                ctx.arc(O.x, O.y, R, 0, Math.PI * 2);
+                ctx.strokeStyle = "#cbd5e1";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                MathUtils.drawLine(ctx, A, B, "#7e22ce", 2);
+                MathUtils.drawLine(ctx, B, C, "#7e22ce", 2);
+                MathUtils.drawLine(ctx, C, D, "#7e22ce", 2);
+                MathUtils.drawLine(ctx, D, A, "#7e22ce", 2);
+
+                MathUtils.drawPoint(ctx, A, "A", "#7e22ce", 5);
+                MathUtils.drawPoint(ctx, B, "B", "#7e22ce", 5);
+                MathUtils.drawPoint(ctx, C, "C", "#7e22ce", 5);
+                MathUtils.drawPoint(ctx, D, "D", "#7e22ce", 5);
+            }
+
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const m = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                [getPoint(angA), getPoint(angB), getPoint(angC), getPoint(angD)].forEach((p, idx) => {
+                    if (MathUtils.dist(m, p) < 15) dragIdx = idx;
+                });
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (dragIdx === null) return;
+                const rect = canvas.getBoundingClientRect();
+                const ang = Math.atan2((e.clientY - rect.top) - O.y, (e.clientX - rect.left) - O.x);
+                if (dragIdx === 0) angA = ang;
+                else if (dragIdx === 1) angB = ang;
+                else if (dragIdx === 2) angC = ang;
+                else if (dragIdx === 3) angD = ang;
+                draw();
+            });
+
+            window.addEventListener('mouseup', () => dragIdx = null);
+
+            draw();
+        };
+
+        // INITIALIZE ALL CANVASES ON WINDOW LOAD
+        window.addEventListener('load', () => {
+            initParallelCanvas();
+            initCircleAnglesCanvas();
+            initTriangleLinesCanvas();
+            initTangentCanvas();
+            initThalesCanvas();
+            initPythagorasCanvas();
+            initPtolemyCanvas();
+            initCevaMenelausCanvas();
+            initCyclicQuadCanvas();
+        });
+
+        // --- UI INTERACTION & NAVIGATION ---
+
+        // Mobile Sidebar Toggle
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        const toggleSidebarFunc = () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        };
+
+        if(toggleBtn) toggleBtn.addEventListener('click', toggleSidebarFunc);
+        if(overlay) overlay.addEventListener('click', toggleSidebarFunc);
+
+        // Smooth Scroll & Navigation Active State
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.dataset.target;
+                const el = document.getElementById(targetId);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active', 'bg-slate-800', 'text-white'));
+                    btn.classList.add('active', 'bg-slate-800', 'text-white');
+                }
+                if (window.innerWidth < 768) toggleSidebarFunc();
+            });
+        });
+
+        // Fast Search Filtering
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            document.querySelectorAll('.card-item').forEach(card => {
+                const keywords = card.dataset.keywords || "";
+                const text = card.textContent.toLowerCase();
+                if (keywords.includes(query) || text.includes(query)) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
